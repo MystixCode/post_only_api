@@ -28,27 +28,25 @@
 
         public function verifyToken($token)
         {
-
              $signaturekey='!dhgjghkf_fsd65-SFGHfhGKJK?HDfjhjg_lulz';
 
              $jwtarray=explode('.', $token);
 
              if (count($jwtarray) == 3){ #if jwt consists of 3 items separated by .
 
-                 $header = json_decode(base64_decode(strtr($jwtarray[0], '-_', '+/')), true); #decode
 
-                 $payload = json_decode(base64_decode(strtr($jwtarray[1], '-_', '+/')), true); #decode
+              $header = json_decode(base64_decode(strtr($jwtarray[0], '-_', '+/')), true); #decode
+              $payload = json_decode(base64_decode(strtr($jwtarray[1], '-_', '+/')), true); #decode
 
                 $signature1 = $jwtarray[2];
                 if ($header["alg"] == "HS256") {
-                    $signature2 = strtr(base64_encode(hash_hmac('sha256', $jwtarray[0] . "." . $jwtarray[1], $signaturekey, true)), '-_', '+/');
+                    $signature2 = strtr(base64_encode(hash_hmac('sha256', $jwtarray[0] . "." . $jwtarray[1], $signaturekey, true)), '+/', '-_');
                     if($signature1 === $signature2){ #if signature is valid
                         if ($payload["iss"] AND $payload["aud"] AND $payload["sub"] AND $payload["iat"] AND $payload["exp"]) { #if payloadparams
                             if ($payload["iss"]=="https://" . $_SERVER['SERVER_NAME']) {
                                 if ($payload["aud"] == "https://mystixgame.tk"){
-                                    if ($payload["exp"] > time()){
-                                        #print("token verified")
-                                        return json_encode($payload);
+                                    if ($payload["exp"] > time()) {
+                                        return true;
                                     }
                                 }
                             }
@@ -56,7 +54,6 @@
                     }
                 }
              }
-             echo "token invalid";
              return false;
         }
 

@@ -33,11 +33,40 @@
       $response = [];
       $response['service'] = $service;
       $response['action'] = $action;
+
       $svc = new $service();
-      $response['payload']  = $svc->$action($data->payload);
+
+      if (needAuth($service, $action) === true) {
+          $instance = new JWT();
+          $token = $instance->getToken();
+
+          if ($instance->verifyToken($token) != false) {
+              $response['payload']  = $svc->$action($data->payload);
+          } else {
+              http_response_code(401);
+              $response["payload"] = array('message' => 'auth required');
+          }
+      } else {
+          $response['payload']  = $svc->$action($data->payload);
+      }
       echo json_encode($response);
     }
   }
+
+function needAuth($service, $action) {
+    $need = array(
+        "user" => ["edit", "delete"],
+        "character" => ["list", "get", "edit", "delete"]
+    );
+    foreach ($need as $needle => $values) {
+        if ($needle == $service) {
+            if (in_array($action, $values)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 
 

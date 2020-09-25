@@ -5,16 +5,6 @@
 class Character {
   public function list($data)
   {
-
-      $instance = new JWT();
-      $token = $instance->getToken();
-      //echo $token;
-
-      echo $instance->verifyToken($token);
-
-     //TODO get token and..
-    echo $data . "  testtesttestTODO:character.php";
-    //TODO verify token
     $pdo = new PDO('mysql:host=localhost;dbname=api', 'master', 'Yep_Das_Geht!_Bitch6');
 
     //$user_id=$data->sub;
