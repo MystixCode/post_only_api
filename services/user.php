@@ -75,7 +75,7 @@ class User {
 
                   $stmt = $pdo->prepare('INSERT INTO user (hash, name, email) VALUES (?, ?, ?)');
                   $stmt->execute(array($hash, $name, $email));
-
+//TODO ADD default Permissions
                   return "user doesnt already exist - register done";
                 }
                 return "user already exists";

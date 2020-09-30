@@ -46,7 +46,7 @@
                             if ($payload["iss"]=="https://" . $_SERVER['SERVER_NAME']) {
                                 if ($payload["aud"] == "https://mystixgame.tk"){
                                     if ($payload["exp"] > time()) {
-                                        return true;
+                                        return $payload;
                                     }
                                 }
                             }

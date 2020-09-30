@@ -3,12 +3,13 @@
 # Character Class                                                              #
 ################################################################################
 class Character {
-  public function list($data)
+  public function list($data, $user_id)
   {
-    $pdo = new PDO('mysql:host=localhost;dbname=api', 'master', 'Yep_Das_Geht!_Bitch6');
+    $db = new DB();
+    $pdo = $db->connect();
 
-    //$user_id=$data->sub;
-    $user_id =3;
+    //$user_id=;
+    //$user_id =3;
     //echo $user_id;
 
     $stmt = $pdo->prepare('SELECT id, name FROM chars WHERE user_id = :user_id');
