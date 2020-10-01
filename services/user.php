@@ -34,7 +34,7 @@ class User {
                    # request signature key and token from api and store in variable ?? needed?
                    # check every udp packet for token and compare, and check signature if ok proceed: https://auth0.com/docs/tokens/guides/jwt/validate-jwt
                    # renew token before expired if logged in and still the same ip and profile?? <-- on game server change expiration?
-
+                  
                   return "login successfull";
                 }
               }
@@ -75,7 +75,16 @@ class User {
 
                   $stmt = $pdo->prepare('INSERT INTO user (hash, name, email) VALUES (?, ?, ?)');
                   $stmt->execute(array($hash, $name, $email));
-//TODO ADD default Permissions
+
+                    //TODO ADD default Permissions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    $user_id = $pdo->lastInsertId();
+                    $role_id = 1;
+                    $stmtz = $pdo->prepare('INSERT INTO user_role (user_id, role_id) VALUES (?, ?)');
+                    $stmtz->execute(array($user_id, $role_id));
+
+
+
+
                   return "user doesnt already exist - register done";
                 }
                 return "user already exists";
