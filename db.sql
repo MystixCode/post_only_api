@@ -49,7 +49,7 @@ CREATE TABLE role (
 
 INSERT INTO role (
     name
-) VALUES 
+) VALUES
     ('admin'),
     ('user')
 ;
@@ -79,7 +79,7 @@ CREATE TABLE permission (
 
 INSERT INTO permission (
     name
-) VALUES 
+) VALUES
     ('testberechtigung1'),
     ('testberechtigung2')
 ;
@@ -101,21 +101,4 @@ INSERT INTO role_permission (
     1
 );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*TODO insert admin role_permission etc*/

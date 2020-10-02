@@ -14,7 +14,7 @@ class JWT {
             'aud' => "https://mystixgame.tk",
             'sub' => $id,
             'iat' => time(),
-            'exp' => time() + 3600,
+            'exp' => time() + 1800,
             'username' => $name,
             'roles' => $rolenames
         );

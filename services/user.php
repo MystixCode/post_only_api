@@ -3,7 +3,7 @@
 # User Class                                                                   #
 ################################################################################
 class User {
-    
+
     ## LOGIN ###################################################################
     public function login($data) {
         $name=$data->name;
@@ -82,7 +82,36 @@ class User {
 
     ## LIST ####################################################################
     public function list($data) {
-        return "api todo list user";
+        $pdo = new DB();
+        $pdo = $pdo->connect();
+        $stmt = $pdo->prepare('SELECT user.id, user.name, user.email, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id');
+        $stmt->execute();
+        $payload=array();
+
+        $data = $stmt->fetchAll();
+        //TODO das isch basustell!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        foreach ($data as $row) {
+            //create entry array
+            $entry = array();
+            $entry['user_id']=$row['id'];
+            $entry['user_name']=$row['name'];
+            $entry['user_email']=$row['email'];
+            $entry['user_roles'][]=$row['role_name'];
+            $alreadyexists = false;
+            foreach ($payload as $key=>$item){
+                   if (isset($item['user_id']) && $item['user_id'] == $row['id']) {
+                       $payload[$key]['user_roles'][] = $row['role_name'];
+                       $alreadyexists = true;
+                   }
+               }
+             if ($alreadyexists == false){
+                 $payload[]=$entry;
+             }
+
+        }
+        $response = json_encode(array(service => 'user', action => 'list', payload => $payload));
+        return $response;
     }
 
     ## GET #####################################################################
