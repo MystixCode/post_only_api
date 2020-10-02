@@ -6,6 +6,8 @@ class JWT {
 
     ## createToken #############################################################
     public function createToken($id, $name, $rolenames) {
+
+
         //TODO get role from db and add to token
         //TODO omit = urldecode/encode
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']); // Create token header as a JSON string
@@ -21,7 +23,8 @@ class JWT {
         $payload = json_encode($payloaddata); // Create token payload as a JSON string
         $base64UrlHeader = str_replace(['+', '/'], ['-', '_'], base64_encode($header)); // Encode Header to Base64Url String
         $base64UrlPayload = str_replace(['+', '/'], ['-', '_'], base64_encode($payload)); // Encode Payload to Base64Url String
-        $signaturekey='!dhgjghkf_fsd65-SFGHfhGKJK?HDfjhjg_lulz';
+        $conf = parse_ini_file('conf.ini');
+        $signaturekey=$conf['jwt_secret'];
         $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $signaturekey, true); // Create Signature Hash
         $base64UrlSignature = str_replace(['+', '/'], ['-', '_'], base64_encode($signature)); // Encode Signature to Base64Url String
         $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature; // Create JWT
@@ -32,7 +35,8 @@ class JWT {
 
     ## verifyToken #############################################################
     public function verifyToken($token) {
-        $signaturekey='!dhgjghkf_fsd65-SFGHfhGKJK?HDfjhjg_lulz';
+        $conf = parse_ini_file('conf.ini');
+        $signaturekey=$conf['jwt_secret'];
         $jwtarray=explode('.', $token);
         if (count($jwtarray) == 3) { #if jwt consists of 3 items separated by .
             $header = json_decode(base64_decode(strtr($jwtarray[0], '-_', '+/')), true); #decode

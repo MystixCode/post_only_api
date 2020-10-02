@@ -3,6 +3,7 @@
 # mystix-api                                                                   #
 ################################################################################
 #TODO maybe integrate API key functionality one day..
+
 require("db.php");
 require("jwt.php");
 require("validation.php");
@@ -69,7 +70,8 @@ function needAuth($service, $action) {
 
 function hasPermission($user_id, $needed_permission) {
     //TODO check if user has permission
-    $pdo = new PDO('mysql:host=localhost;dbname=api', 'master', 'Yep_Das_Geht!_Bitch6');
+    $pdo = new DB();
+    $pdo = $pdo->connect();
     $permission_name = $needed_permission;
     $stmt = $pdo->prepare('SELECT permission.id FROM permission JOIN (role_permission, role, user_role, user) ON (permission.name=:permission_name AND role_permission.permission_id=permission.id AND role.id=role_permission.role_id AND  user_role.role_id=role.id AND user.id=user_role.user_id AND user.id = :user_id);');
     $stmt->execute(['user_id' => $user_id, 'permission_name' => $permission_name]);
@@ -79,6 +81,5 @@ function hasPermission($user_id, $needed_permission) {
     }
     return false;
 }
-
 
 ?>
