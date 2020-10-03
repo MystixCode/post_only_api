@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function needAuth($service, $action) {
     $need = array(
-        "user" => ["list", "get", "edit", "delete"],
+        "user" => ["list", "get", "edit", "delete", "getOther"],
         "character" => ["list", "get", "edit", "delete"]
     );
     foreach ($need as $needle => $values) {

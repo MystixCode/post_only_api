@@ -114,8 +114,41 @@ class User {
         return $response;
     }
 
+
+    ## GETOTHER #####################################################################
+    public function getOther($data, $user_id) {
+        if (isset($data->userid)) {
+
+            $user_id=$data->userid;
+
+            $pdo = new DB();
+            $pdo = $pdo->connect();
+            $stmt = $pdo->prepare('SELECT user.name, user.email, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.id = :user_id');
+            $stmt->execute(array($user_id));
+            $user_name='';
+            $user_email='';
+            $rolen_names = array();
+            while ($row = $stmt->fetch())
+            {
+                $user_name=$row['name'];
+                $user_email=$row['email'];
+                $role_names[]=$row['role_name'];
+            }
+            $response = json_encode(array(service => 'user', action => 'get', user_id => $user_id, user_name => $user_name, user_email => $user_email, roles => $role_names));
+            return $response;
+        }
+
+
+
+    }
     ## GET #####################################################################
     public function get($data, $user_id) {
+
+
+        //echo $data['payload'];
+
+
+
         $pdo = new DB();
         $pdo = $pdo->connect();
         $stmt = $pdo->prepare('SELECT user.name, user.email, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.id = :user_id');
@@ -133,6 +166,47 @@ class User {
         return $response;
     }
 
+    ## EDIT ####################################################################
+    public function editOther($data, $user_id) {
+
+        if (isset($data->userid)) {
+
+            $user_id=$data->userid;
+
+
+        $name=$data->name;	#TODO validate input   #TODO only register user if not user with same name exists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        $email=$data->email;
+        $password=$data->password;
+        $password2=$data->password2;
+        $pdo = new DB();
+        $pdo = $pdo->connect();
+        if (!empty($name)) {
+            if (is_valid('alphanumeric_s3', $name) == true) {
+                $stmt = $pdo->prepare('UPDATE user SET name = :name WHERE id = :user_id');
+                $stmt->execute(array($name, $user_id));
+            }
+        }
+        if (!empty($email)) {
+            if (filter_var($email, FILTER_VALIDATE_EMAIL) != false) {
+                $stmt = $pdo->prepare('UPDATE user SET email = :email WHERE id = :user_id');
+                $stmt->execute(array($email, $user_id));
+            }
+        }
+        if (!empty($password) and !empty($password2)) {
+            if (is_valid('alphanumeric_s1', $password) == true and is_valid('alphanumeric_s1', $password2) == true){
+                if ($password === $password2) {
+                    if (strlen($password) >= 6) {
+                        $hash = password_hash($password, PASSWORD_DEFAULT);
+                        $stmt = $pdo->prepare('UPDATE user SET hash = :hash WHERE id = :user_id');
+                        $stmt->execute(array($hash, $user_id));
+                    }
+                }
+            }
+        }
+        $response = json_encode(array(service => 'user', action => 'edit', message => 'Done TODO errorhandling'));
+        return $response;
+    }
+    }
     ## EDIT ####################################################################
     public function edit($data, $user_id) {
         $name=$data->name;	#TODO validate input   #TODO only register user if not user with same name exists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
