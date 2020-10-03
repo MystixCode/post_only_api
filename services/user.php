@@ -117,9 +117,9 @@ class User {
 
     ## GETOTHER #####################################################################
     public function getOther($data, $user_id) {
-        if (isset($data->userid)) {
+        if (isset($data->id)) {
 
-            $user_id=$data->userid;
+            $user_id=$data->id;
 
             $pdo = new DB();
             $pdo = $pdo->connect();
@@ -169,9 +169,9 @@ class User {
     ## EDIT ####################################################################
     public function editOther($data, $user_id) {
 
-        if (isset($data->userid)) {
+        if (isset($data->id)) {
 
-            $user_id=$data->userid;
+            $user_id=$data->id;
 
 
         $name=$data->name;	#TODO validate input   #TODO only register user if not user with same name exists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
