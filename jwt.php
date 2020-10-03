@@ -6,10 +6,7 @@ class JWT {
 
     ## createToken #############################################################
     public function createToken($id, $name, $rolenames) {
-
-
-        //TODO get role from db and add to token
-        //TODO omit = urldecode/encode
+        //TODO omit '=' in urldecode/encode
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']); // Create token header as a JSON string
         $payloaddata = array(
             'iss' => "https://" . $_SERVER['SERVER_NAME'],

@@ -14,6 +14,7 @@ header("Access-Control-Max-Age: 3600");
 header("Content-Type: application/json; charset=UTF-8");
 header('Access-Control-Allow-Headers: *');
 
+## if POST check token and peremission and then load service->action ###########
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $json = file_get_contents('php://input');
     $data = @json_decode($json);
@@ -35,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($decoded_payload != false) {
                 $user_id=$decoded_payload['sub'];
                 $needed_permission=$service . '_' . $action;
-                if (hasPermission($user_id, $needed_permission)) { //TODO baustell!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if (hasPermission($user_id, $needed_permission)) {
                     $response['payload']  = $svc->$action($data->payload, $user_id);
                 }
                 else {
@@ -69,7 +70,6 @@ function needAuth($service, $action) {
 }
 
 function hasPermission($user_id, $needed_permission) {
-    //TODO check if user has permission
     $pdo = new DB();
     $pdo = $pdo->connect();
     $permission_name = $needed_permission;

@@ -22,7 +22,6 @@ INSERT INTO user (
     'mystix@mystixgame.tk'
 );
 
-
 CREATE TABLE chars (
    id INT NOT NULL AUTO_INCREMENT,
    user_id int NOT NULL,
@@ -30,7 +29,6 @@ CREATE TABLE chars (
    PRIMARY KEY (id),
    FOREIGN KEY (user_id) REFERENCES user (id)
 );
-
 
 INSERT INTO chars (
     user_id,
@@ -45,7 +43,6 @@ CREATE TABLE role (
    name VARCHAR(40) NOT NULL,
    PRIMARY KEY (id)
 );
-
 
 INSERT INTO role (
     name
@@ -101,4 +98,4 @@ INSERT INTO role_permission (
     1
 );
 
-/*TODO insert admin role_permission etc*/
+/*TODO insert admin and user role_permission etc*/

@@ -1,11 +1,11 @@
 <?php
 ################################################################################
-# DB Class                                                              #
+# DB Class                                                                     #
 ################################################################################
 class DB {
 
+    ## CONNECT to db ###########################################################
     public function connect() {
-
         try {
             $conf = parse_ini_file('conf.ini');
             $pdo = new PDO($conf['db_dsn'], $conf['db_user'], $conf['db_password']);
@@ -17,4 +17,5 @@ class DB {
             return 'DB connection failed: ' . $e->getMessage();
         }
     }
+
 }
