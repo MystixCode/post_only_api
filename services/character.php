@@ -14,13 +14,20 @@ class Character {
         $data = $stmt->fetchAll();
         foreach ($data as $row) {
             //create entry array
-            $entry = array();
-            $entry['character_id']=$row['id'];
-            $entry['character_name']=$row['name'];
-            $payload[]=$entry;
+            if ($row['id'] !== null AND $row['name'] !== null ){
+                $entry = array();
+                $entry['character_id']=$row['id'];
+                $entry['character_name']=$row['name'];
+                $payload[]=$entry;
+
+            }
         }
+
         $response = json_encode($payload);
         return $response;
+
+
+
     }
 
     ## GET #####################################################################
@@ -32,22 +39,14 @@ class Character {
                 $pdo = $pdo->connect();
                 $stmt = $pdo->prepare('SELECT id, name FROM chars WHERE id = :character_id AND user_id = :user_id');
                 $stmt->execute(array($character_id, $user_id));
-
                 $payload = array();
                 $result = $stmt->fetch();
                 $payload['character_id']= $result['id'];
                 $payload['character_name']= $result['name'];
-
                 return  json_encode($payload);
-
-
-                //return json_encode(array(character_name => $chars, message => 'DONE TODO..'));
             }
         }
-
         return json_encode(array(character_name => 'error', message => 'TODO API character>get'));
-
-
     }
 
     ## Create ##################################################################
@@ -59,7 +58,6 @@ class Character {
                 $pdo = $db->connect();
                 $stmt = $pdo->prepare('INSERT INTO chars (user_id, name) VALUES (?, ?)');
                 $stmt->execute(array($user_id, $name));
-
                 return json_encode("done  todo api errorhandling");
             }
         }
@@ -67,9 +65,6 @@ class Character {
 
     ## EDIT ####################################################################
     public function edit($data, $user_id) {
-        //TODO if user_id correct  for character_id
-
-
         $character_id=$data->character_id;
         $character_name=$data->character_name;
         if (isset($user_id) && isset($character_id) && isset($character_name) ) {
