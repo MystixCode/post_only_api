@@ -6,12 +6,12 @@ class Page {
 
     ## LIST ####################################################################
     public function list($data, $user_id) {
-        return json_encode(array(message => 'TODO page list'));
+        return array(message => 'TODO page list');
     }
 
     ## GET #####################################################################
     public function get($data, $user_id) {
-        return json_encode(array(message => 'TODO page get'));
+        return array(message => 'TODO page get');
     }
 
     ## Create ##################################################################
@@ -19,13 +19,7 @@ class Page {
         $page_name=$data->page_name;
         $page_path=$data->page_path; //    /user/edit
         $page_content=$data->page_content;
-
          if ($page_name && $page_path) {
-
-
-
-
-
              $file=$page_path . '.html';
              $file_path = '/var/www/client/pages' . $file;
 
@@ -35,28 +29,22 @@ class Page {
                         // Some simple example content.
                  if (file_put_contents($file_path, $page_content) !== false)
                  {
-                     return json_encode(array(message => 'Created file: ' . $file));
+                     return array(message => 'Created file: ' . $file);
                  }
              }
-
-            //do stuff with $file.
-
-
-
-            return json_encode(array(message => 'TODO: page_name=' . $page_name . ' page_path='  . $page_path));
+            return array(message => 'TODO: page_name=' . $page_name . ' page_path='  . $page_path);
         }
-        return json_encode(array(message => 'TODO page add todo error'));
+        return array(message => 'TODO page add todo error');
     }
 
     ## EDIT ####################################################################
     public function edit($data, $user_id) {
-
-        return json_encode(array(message => 'TODO page edit'));
+        return array(message => 'TODO page edit');
     }
 
     ## DELETE ##################################################################
     public function delete($data, $user_id) {
-        return json_encode(array(message => 'TODO page delete'));
+        return array(message => 'TODO page delete');
     }
 }
 ?>

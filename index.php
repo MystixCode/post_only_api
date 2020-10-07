@@ -94,6 +94,4 @@ function checkPermissionAndExecute($service, $action, $payload){
         }
     }
 }
-
-
 ?>

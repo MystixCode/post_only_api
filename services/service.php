@@ -6,12 +6,12 @@ class Service {
 
     ## LIST ####################################################################
     public function list($data, $user_id) {
-        return json_encode(array(message => 'TODO service list'));
+        return array(message => 'TODO service list');
     }
 
     ## GET #####################################################################
     public function get($data, $user_id) {
-        return json_encode(array(message => 'TODO service get'));
+        return array(message => 'TODO service get');
     }
 
     ## Add ##################################################################
@@ -70,12 +70,12 @@ class $service_name {
 
                     if (file_put_contents($file_path, $page_content) !== false)
                     {
-                            return json_encode(array(message => 'Created file: ' . $file_path));
+                            return array(message => 'Created file: ' . $file_path);
                     }
                 }
             }
         }
-        return json_encode(array(message => 'TODO service add todo error'));
+        return array(message => 'TODO service add todo error');
     }
 
     ## Add Action to service ###################################################
@@ -87,20 +87,19 @@ class $service_name {
             //do stuff
             //create action in service
 
-            return json_encode(array(message => 'TODO API service>add'));
+            return array(message => 'TODO API service>add');
         }
-        return json_encode(array(message => 'TODO service add todo error'));
+        return array(message => 'TODO service add todo error');
     }
 
     ## EDIT ####################################################################
     public function edit($data, $user_id) {
-
-        return json_encode(array(message => 'TODO service edit'));
+        return array(message => 'TODO service edit');
     }
 
     ## DELETE ##################################################################
     public function delete($data, $user_id) {
-        return json_encode(array(message => 'TODO service delete'));
+        return array(message => 'TODO service delete');
     }
 }
 ?>

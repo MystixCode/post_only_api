@@ -19,15 +19,9 @@ class Character {
                 $entry['character_id']=$row['id'];
                 $entry['character_name']=$row['name'];
                 $payload[]=$entry;
-
             }
         }
-
-        $response = json_encode($payload);
-        return $response;
-
-
-
+        return $payload;
     }
 
     ## GET #####################################################################
@@ -43,10 +37,10 @@ class Character {
                 $result = $stmt->fetch();
                 $payload['character_id']= $result['id'];
                 $payload['character_name']= $result['name'];
-                return  json_encode($payload);
+                return  $payload;
             }
         }
-        return json_encode(array(character_name => 'error', message => 'TODO API character>get'));
+        return array(character_name => 'error', message => 'TODO API character>get');
     }
 
     ## Create ##################################################################
@@ -58,7 +52,7 @@ class Character {
                 $pdo = $db->connect();
                 $stmt = $pdo->prepare('INSERT INTO chars (user_id, name) VALUES (?, ?)');
                 $stmt->execute(array($user_id, $name));
-                return json_encode("done  todo api errorhandling");
+                return "done  todo api errorhandling";
             }
         }
     }
@@ -73,10 +67,10 @@ class Character {
                 $pdo = $pdo->connect();
                 $stmt = $pdo->prepare('UPDATE chars SET name = :character_name WHERE id = :character_id AND user_id = :user_id');
                 $stmt->execute(array($character_name, $character_id, $user_id));
-                return json_encode(array(character_name => 'testcharname', message => 'DONE TODO..'));
+                return array(message => 'API DONE TODO..');
             }
         }
-        return json_encode("api error character>edit");
+        return "api error character>edit";
     }
 
     ## DELETE ##################################################################
@@ -88,8 +82,7 @@ class Character {
                 $pdo = $pdo->connect();
                 $stmt = $pdo->prepare('DELETE FROM chars WHERE id  = :character_id AND user_id = :user_id');
                 $stmt->execute(array($character_id, $user_id));
-                $response = json_encode(array(message => 'done TODO: errorhandling'));
-                return $response;
+                return array(message => 'done TODO: errorhandling');
             }
         }
     }

@@ -33,7 +33,7 @@ class User {
                             # request signature key and token from api and store in variable ?? needed?
                             # check every udp packet for token and compare, and check signature if ok proceed: https://auth0.com/docs/tokens/guides/jwt/validate-jwt
                             # renew token before expired if logged in and still the same ip and profile?? <-- on game server change expiration?
-                            return "login successfull";
+                            return array(message => 'loggedin successful');
                         }
                     }
                 }
@@ -68,16 +68,16 @@ class User {
                                     $role_id = 2; //DEFAULT ROLE
                                     $stmtz = $pdo->prepare('INSERT INTO user_role (user_id, role_id) VALUES (?, ?)');
                                     $stmtz->execute(array($user_id, $role_id));
-                                    return "user doesnt already exist - register done";
+                                    return array(message => 'user doesnt already exist - register done');
                                 }
-                                return "user already exists";
+                                return array(message => 'user already exists');
                             }
                         }
                     }
                 }
             }
         }
-        return "register failed - empty values";
+        return array(message => 'register failed - empty values');
     }
 
     ## LIST ####################################################################
@@ -106,16 +106,13 @@ class User {
                  $payload[]=$entry;
              }
         }
-        $response = json_encode(array(payload => $payload));
-        return $response;
+        return $payload;
     }
 
     ## GETOTHER #####################################################################
     public function getOther($data, $user_id) {
         $user_id=$data->id;
         if (isset($user_id)) {
-
-
             if (is_valid('numeric', $user_id) == true) {
                 $pdo = new DB();
                 $pdo = $pdo->connect();
@@ -130,15 +127,9 @@ class User {
                     $user_email=$row['email'];
                     $role_names[]=$row['role_name'];
                 }
-                $response = json_encode(array(user_id => $user_id, user_name => $user_name, user_email => $user_email, roles => $role_names));
-                return $response;
+                return array(user_id => $user_id, user_name => $user_name, user_email => $user_email, roles => $role_names);
             }
-
-
         }
-
-
-
     }
     ## GET #####################################################################
     public function get($data, $user_id) {
@@ -156,8 +147,7 @@ class User {
             $user_email=$row['email'];
             $role_names[]=$row['role_name'];
         }
-        $response = json_encode(array(user_id => $user_id, user_name => $user_name, user_email => $user_email, roles => $role_names));
-        return $response;
+        return array(user_id => $user_id, user_name => $user_name, user_email => $user_email, roles => $role_names);
     }
 
     ## EDIT Other ####################################################################
@@ -195,8 +185,7 @@ class User {
                         }
                     }
                 }
-                $response = json_encode(array(message => 'Done TODO errorhandling'));
-                return $response;
+                return array(message => 'Done TODO errorhandling');
             }
         }
     }
@@ -231,8 +220,7 @@ class User {
                 }
             }
         }
-        $response = json_encode(array(message => 'Done TODO errorhandling'));
-        return $response;
+        return array(message => 'Done TODO errorhandling');
     }
 
     ## DELETE ##################################################################
@@ -240,19 +228,13 @@ class User {
     {
         $pdo = new DB();
         $pdo = $pdo->connect();
-
-
         $stmt = $pdo->prepare('DELETE FROM chars WHERE user_id = :user_id');
         $stmt->execute(array($user_id));
-
         $stmt = $pdo->prepare('DELETE FROM user_role WHERE user_id = :user_id');
         $stmt->execute(array($user_id));
-
         $stmt = $pdo->prepare('DELETE FROM user WHERE id = :user_id');
         $stmt->execute(array($user_id));
-
-        $response = json_encode(array(message => 'done TODO: errorhandling'));
-        return $response;
+        return array(message => 'done TODO: errorhandling');
     }
 
     ## DELETE Other##################################################################
@@ -271,15 +253,37 @@ class User {
                 $stmt = $pdo->prepare('DELETE FROM user WHERE id = :user_id');
                 $stmt->execute(array($id));
 
-                $response = json_encode(array(message => 'done TODO: errorhandling'));
-                return $response;
+                return array(message => 'done TODO: errorhandling');
             }
 
         }
     }
 
-
-
+    ## LIST ALL PERMISSION ####################################################################
+    public function listAllPermission($data) {
+        $pdo = new DB();
+        $pdo = $pdo->connect();
+        $stmt = $pdo->prepare('SELECT permission.name as "permission_name", role.name as "role_name" FROM permission JOIN role_permission ON role_permission.permission_id = permission.id JOIN role ON role.id = role_permission.role_id ORDER BY permission.name;');
+        $stmt->execute();
+        $payload=array();
+        $data = $stmt->fetchAll();
+        foreach ($data as $row) {
+            $alreadyexists = false;
+            foreach ($payload as $key=>$item){
+                   if (isset($item['permission_name']) && $item['permission_name'] == $row['permission_name']) {
+                       $payload[$key]['roles'][] = $row['role_name'];
+                       $alreadyexists = true;
+                   }
+               }
+             if ($alreadyexists == false){
+                 $entry = array();
+                 $entry['permission_name']=$row['permission_name'];
+                 $entry['roles'][]=$row['role_name'];
+                 $payload[]=$entry;
+             }
+        }
+        return $payload;
+    }
 }
 
 ?>
