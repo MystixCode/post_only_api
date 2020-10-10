@@ -3,6 +3,12 @@
 # User Class                                                                   #
 ################################################################################
 class User {
+    private $pdo;
+
+    function __construct() {
+        $db = new DB();
+        $this->pdo = $db->connect();
+    }
 
     ## LOGIN ###################################################################
     public function login($data) {
@@ -12,9 +18,7 @@ class User {
             if (is_valid('alphanumeric_s3', $name)== true) {
                 if (is_valid('alphanumeric_s1', $password)== true) {
                     if (strlen($password) >= 6) {
-                        $pdo = new DB();
-                        $pdo = $pdo->connect();
-                        $stmt = $pdo->prepare('SELECT user.id, user.hash, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.name = :name');
+                        $stmt = $this->pdo->prepare('SELECT user.id, user.hash, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.name = :name');
                         $stmt->execute(['name' => $name]);
                         $hash = '';
                         $user_id = '';
@@ -53,20 +57,18 @@ class User {
                     if (is_valid('alphanumeric_s1', $password) == true and is_valid('alphanumeric_s1', $password2) == true) {
                         if ($password === $password2) {
                             if (strlen($password) >= 6) {
-                                $pdo = new DB();
-                                $pdo = $pdo->connect();
                                 #check if $user already exists in db
-                                $stmt2 = $pdo->prepare('SELECT * FROM user WHERE name=?');
+                                $stmt2 = $this->pdo->prepare('SELECT * FROM user WHERE name=?');
                                 $stmt2->execute(array($name));
                                 $row = $stmt2->fetch(PDO::FETCH_ASSOC);
                                 if( ! $row) { #if username doesnt already exist
                                     $hash = password_hash($password, PASSWORD_DEFAULT);
-                                    $stmt = $pdo->prepare('INSERT INTO user (hash, name, email) VALUES (?, ?, ?)');
+                                    $stmt = $this->pdo->prepare('INSERT INTO user (hash, name, email) VALUES (?, ?, ?)');
                                     $stmt->execute(array($hash, $name, $email));
                                     //TODO ADD default Permissions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                    $user_id = $pdo->lastInsertId();
+                                    $user_id = $this->pdo->lastInsertId();
                                     $role_id = 2; //DEFAULT ROLE
-                                    $stmtz = $pdo->prepare('INSERT INTO user_role (user_id, role_id) VALUES (?, ?)');
+                                    $stmtz = $this->pdo->prepare('INSERT INTO user_role (user_id, role_id) VALUES (?, ?)');
                                     $stmtz->execute(array($user_id, $role_id));
                                     return array(message => 'user doesnt already exist - register done');
                                 }
@@ -82,9 +84,7 @@ class User {
 
     ## LIST ####################################################################
     public function list($data) {
-        $pdo = new DB();
-        $pdo = $pdo->connect();
-        $stmt = $pdo->prepare('SELECT user.id, user.name, user.email, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id');
+        $stmt = $this->pdo->prepare('SELECT user.id, user.name, user.email, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id');
         $stmt->execute();
         $payload=array();
         $data = $stmt->fetchAll();
@@ -114,9 +114,7 @@ class User {
         $user_id=$data->id;
         if (isset($user_id)) {
             if (is_valid('numeric', $user_id) == true) {
-                $pdo = new DB();
-                $pdo = $pdo->connect();
-                $stmt = $pdo->prepare('SELECT user.name, user.email, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.id = :user_id');
+                $stmt = $this->pdo->prepare('SELECT user.name, user.email, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.id = :user_id');
                 $stmt->execute(array($user_id));
                 $user_name='';
                 $user_email='';
@@ -134,9 +132,7 @@ class User {
     ## GET #####################################################################
     public function get($data, $user_id) {
         //echo $data['payload'];
-        $pdo = new DB();
-        $pdo = $pdo->connect();
-        $stmt = $pdo->prepare('SELECT user.name, user.email, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.id = :user_id');
+        $stmt = $this->pdo->prepare('SELECT user.name, user.email, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.id = :user_id');
         $stmt->execute(array($user_id));
         $user_name='';
         $user_email='';
@@ -160,17 +156,15 @@ class User {
                 $email=$data->email;
                 $password=$data->password;
                 $password2=$data->password2;
-                $pdo = new DB();
-                $pdo = $pdo->connect();
                 if (!empty($name)) {
                     if (is_valid('alphanumeric_s3', $name) == true) {
-                        $stmt = $pdo->prepare('UPDATE user SET name = :name WHERE id = :user_id');
+                        $stmt = $this->pdo->prepare('UPDATE user SET name = :name WHERE id = :user_id');
                         $stmt->execute(array($name, $user_id));
                     }
                 }
                 if (!empty($email)) {
                     if (filter_var($email, FILTER_VALIDATE_EMAIL) != false) {
-                        $stmt = $pdo->prepare('UPDATE user SET email = :email WHERE id = :user_id');
+                        $stmt = $this->pdo->prepare('UPDATE user SET email = :email WHERE id = :user_id');
                         $stmt->execute(array($email, $user_id));
                     }
                 }
@@ -179,7 +173,7 @@ class User {
                         if ($password === $password2) {
                             if (strlen($password) >= 6) {
                                 $hash = password_hash($password, PASSWORD_DEFAULT);
-                                $stmt = $pdo->prepare('UPDATE user SET hash = :hash WHERE id = :user_id');
+                                $stmt = $this->pdo->prepare('UPDATE user SET hash = :hash WHERE id = :user_id');
                                 $stmt->execute(array($hash, $user_id));
                             }
                         }
@@ -195,17 +189,15 @@ class User {
         $email=$data->email;
         $password=$data->password;
         $password2=$data->password2;
-        $pdo = new DB();
-        $pdo = $pdo->connect();
         if (!empty($name)) {
             if (is_valid('alphanumeric_s3', $name) == true) {
-                $stmt = $pdo->prepare('UPDATE user SET name = :name WHERE id = :user_id');
+                $stmt = $this->pdo->prepare('UPDATE user SET name = :name WHERE id = :user_id');
                 $stmt->execute(array($name, $user_id));
             }
         }
         if (!empty($email)) {
             if (filter_var($email, FILTER_VALIDATE_EMAIL) != false) {
-                $stmt = $pdo->prepare('UPDATE user SET email = :email WHERE id = :user_id');
+                $stmt = $this->pdo->prepare('UPDATE user SET email = :email WHERE id = :user_id');
                 $stmt->execute(array($email, $user_id));
             }
         }
@@ -214,7 +206,7 @@ class User {
                 if ($password === $password2) {
                     if (strlen($password) >= 6) {
                         $hash = password_hash($password, PASSWORD_DEFAULT);
-                        $stmt = $pdo->prepare('UPDATE user SET hash = :hash WHERE id = :user_id');
+                        $stmt = $this->pdo->prepare('UPDATE user SET hash = :hash WHERE id = :user_id');
                         $stmt->execute(array($hash, $user_id));
                     }
                 }
@@ -226,13 +218,11 @@ class User {
     ## DELETE ##################################################################
     public function delete($data, $user_id)
     {
-        $pdo = new DB();
-        $pdo = $pdo->connect();
-        $stmt = $pdo->prepare('DELETE FROM chars WHERE user_id = :user_id');
+        $stmt = $this->pdo->prepare('DELETE FROM chars WHERE user_id = :user_id');
         $stmt->execute(array($user_id));
-        $stmt = $pdo->prepare('DELETE FROM user_role WHERE user_id = :user_id');
+        $stmt = $this->pdo->prepare('DELETE FROM user_role WHERE user_id = :user_id');
         $stmt->execute(array($user_id));
-        $stmt = $pdo->prepare('DELETE FROM user WHERE id = :user_id');
+        $stmt = $this->pdo->prepare('DELETE FROM user WHERE id = :user_id');
         $stmt->execute(array($user_id));
         return array(message => 'done TODO: errorhandling');
     }
@@ -243,27 +233,20 @@ class User {
         $id=$data->id;
         if (isset($id)) {
             if (is_valid('numeric', $id) == true) {
-
-                $pdo = new DB();
-                $pdo = $pdo->connect();
-
-                $stmt = $pdo->prepare('DELETE FROM user_role WHERE user_id = :user_id');
+                $stmt = $this->pdo->prepare('DELETE FROM user_role WHERE user_id = :user_id');
                 $stmt->execute(array($id));
 
-                $stmt = $pdo->prepare('DELETE FROM user WHERE id = :user_id');
+                $stmt = $this->pdo->prepare('DELETE FROM user WHERE id = :user_id');
                 $stmt->execute(array($id));
 
                 return array(message => 'done TODO: errorhandling');
             }
-
         }
     }
 
     ## LIST ALL PERMISSION ####################################################################
     public function listAllPermission($data) {
-        $pdo = new DB();
-        $pdo = $pdo->connect();
-        $stmt = $pdo->prepare('SELECT permission.name as "permission_name", role.name as "role_name" FROM permission JOIN role_permission ON role_permission.permission_id = permission.id JOIN role ON role.id = role_permission.role_id ORDER BY permission.name;');
+        $stmt = $this->pdo->prepare('SELECT permission.name as "permission_name", role.name as "role_name" FROM permission JOIN role_permission ON role_permission.permission_id = permission.id JOIN role ON role.id = role_permission.role_id ORDER BY permission.name;');
         $stmt->execute();
         $payload=array();
         $data = $stmt->fetchAll();
@@ -283,6 +266,151 @@ class User {
              }
         }
         return $payload;
+    }
+
+    ## LIST Roles ####################################################################
+    public function listRoles($data) {
+        $stmt = $this->pdo->prepare('SELECT role.id as "role_id", role.name as "role_name", role.name as "role_name" FROM role;');
+        $stmt->execute();
+        $payload=array();
+        $data = $stmt->fetchAll();
+        foreach ($data as $key =>$row) {
+            $payload[$key]['role_id']=$row['role_id'];
+            $payload[$key]['role_name']=$row['role_name'];
+        }
+        return $payload;
+    }
+
+    ## GET Roles ####################################################################
+    public function getRole($data) {
+        $id=$data->id;
+        if (isset($id)) {
+            if (is_valid('numeric', $id) == true) {
+                $stmt = $this->pdo->prepare('SELECT role.id as "role_id", role.name as "role_name", role.name as "role_name" FROM role WHERE role.id=:role_id;');
+                $stmt->execute(array($id));
+
+                $data = $stmt->fetchAll();
+                foreach ($data as $key =>$row) {
+                    $payload['role_id']=$row['role_id'];
+                    $payload['role_name']=$row['role_name'];
+                }
+                return $payload;
+            }
+        }
+
+    }
+    ## Edit Roles ####################################################################
+    public function editRole($data) {
+
+        $role_id=$data->role_id;
+        $role_name=$data->role_name;
+        if (isset($role_id) && isset($role_name) ) {
+            if ((is_valid('numeric', $role_id) == true) && (is_valid('alphanumeric', $role_name) == true) ) {
+                $stmt = $this->pdo->prepare('UPDATE role SET name = :role_name WHERE id = :role_id');
+                $stmt->execute(array($role_name, $role_id));
+                return array(message => 'API DONE TODO..');
+            }
+        }
+        return "api error editRole";
+    }
+
+    ## Add Role ####################################################################
+    public function addRole($data) {
+        $name=$data->name;
+        if (!empty($name)){
+            if (is_valid('alphanumeric', $name) == true) {
+                $stmt = $this->pdo->prepare('INSERT INTO role (name) VALUES (?)');
+                $stmt->execute(array($name));
+                return "done  todo api errorhandling";
+            }
+        }
+    }
+    ## Delete Role ####################################################################
+    public function deleteRole($data) {
+        $role_id=$data->role_id;
+        if (isset($role_id)) {
+            if (is_valid('numeric', $role_id) == true) {
+
+                $stmt = $this->pdo->prepare('DELETE FROM role_permission WHERE role_id  = :role_id');
+                $stmt->execute(array($role_id));
+
+                $stmt = $this->pdo->prepare('DELETE FROM user_role WHERE role_id  = :role_id');
+                $stmt->execute(array($role_id));
+
+                $stmt = $this->pdo->prepare('DELETE FROM role WHERE id  = :role_id');
+                $stmt->execute(array($role_id));
+
+                return array(message => 'done TODO: errorhandling');
+            }
+        }
+        return 'error';
+    }
+
+    ## EDIT ALL PERMISSION ####################################################################
+    //TODO make this richtig
+    //TODO if new exists in db --------------> do nothing
+    //TODO else -----------------------------> insert into db
+    //TODO if exists in db but not in new ---> delete from db
+    //DU hier??
+    //ja guuuud
+    public function editAllPermission($data) {
+        //$this->pdo->query('TRUNCATE TABLE role_permission');
+        // foreach ($data as $value) {
+        //     $stmt = $this->pdo->prepare('SELECT id FROM permission WHERE name = :permission_name');
+        //     $stmt->execute(array($value->permission_name));
+        //     $permission_id = $stmt->fetchColumn();
+        //
+        //     foreach ($value->roles as $role) {
+        //
+        //         $stmt = $this->pdo->prepare('SELECT id FROM role WHERE name = :role');
+        //         $stmt->execute(array($role));
+        //         $role_id = $stmt->fetchColumn();
+        //
+        //         $stmt = $this->pdo->prepare('SELECT * FROM role_permission WHERE role_id = :role_id AND permission_id = :permission_id');
+        //         $stmt->execute(array($role_id, $permission_id));
+        //         $role_permission = $stmt->fetchAll();
+        //
+        //         $role_permission_id = "";
+        //         foreach ($role_permission as $rp) {
+        //             $role_permission_id .= $rp['id'] . ', ';
+        //         }
+        //         $role_permission_id = substr($role_permission_id, 0, -2);
+        //
+        //         $stmt = $this->pdo->prepare('DELETE FROM role_permission WHERE id NOT IN :role_permission_id');
+        //         $stmt->execute(array($role_permission_id));
+        //
+        //         //string mit alle id vo neue permission und role z.B 1, 2, 3 use DELETE NOT IN grad erstellte string
+        //         //sgliche mit select und all
+        //         $stmt = $this->pdo->prepare('INSERT INTO role_permission (role_id, permission_id) VALUES (:role_id, :permission_id)');
+        //         $stmt->execute(array($role_id, $permission_id));
+        //     }
+        // }
+        // return 'blub';
+        // $permission_id_array = array();
+        // $permission_id_string = "";
+        // $role_id_array = array();
+        // $role_id_string = "";
+        // foreach ($data as $d) {
+        //   $stmt = $this->pdo->prepare('SELECT id from permission WHERE name = :name');
+        //   $stmt->execute(array($d->permission_name));
+        //   $permission_id = $stmt->fetchColumn();
+        //   array_push($permission_id_array, $permission_id);
+        //   $permission_id_string .= $permission_id . ', ';
+        //   foreach ($d->roles as $role) {
+        //     $stmt = $this->pdo->prepare('SELECT id FROM role WHERE name = :role');
+        //     $stmt->execute(array($role));
+        //     $role_id = $stmt->fetchColumn();
+        //     array_push($role_id_array, $role_id);
+        //     $role_id_string .= $role_id . ', ';
+        //   }
+        // }
+        // $permission_id_string = substr($permission_id_string, 0, -2);
+        // $role_id_string = substr($role_id_string, 0, -2);
+        //
+        // $stmt = $this->pdo->prepare('DELETE FROM role_permission WHERE role_id NOT IN (?) AND permission_id NOT IN (?)');
+        // $stmt->execute(array($role_id_string, $permission_id_string));
+
+        //lost es goht so ned bi aber zu kapputt für heut i gang go penne
     }
 }
 

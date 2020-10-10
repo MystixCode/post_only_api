@@ -3,12 +3,16 @@
 # Character Class                                                              #
 ################################################################################
 class Character {
+    private $pdo;
+
+    function __construct() {
+        $db = new DB();
+        $this->pdo = $db->connect();
+    }
 
     ## LIST ####################################################################
     public function list($data, $user_id) {
-        $pdo = new DB();
-        $pdo = $pdo->connect();
-        $stmt = $pdo->prepare('SELECT id, name FROM chars WHERE user_id = :user_id');
+        $stmt = $this->pdo->prepare('SELECT id, name FROM chars WHERE user_id = :user_id');
         $stmt->execute(['user_id' => $user_id]);
         $payload=array();
         $data = $stmt->fetchAll();
@@ -29,9 +33,7 @@ class Character {
         $character_id=$data->character_id;
         if (isset($user_id) && isset($character_id)) {
             if ((is_valid('numeric', $user_id) == true) && (is_valid('numeric', $character_id) == true)) {
-                $pdo = new DB();
-                $pdo = $pdo->connect();
-                $stmt = $pdo->prepare('SELECT id, name FROM chars WHERE id = :character_id AND user_id = :user_id');
+                $stmt = $this->pdo->prepare('SELECT id, name FROM chars WHERE id = :character_id AND user_id = :user_id');
                 $stmt->execute(array($character_id, $user_id));
                 $payload = array();
                 $result = $stmt->fetch();
@@ -48,9 +50,7 @@ class Character {
         $name=$data->name;
         if (!empty($name)){
             if (is_valid('alphanumeric_s3', $name) == true) {
-                $db = new DB();
-                $pdo = $db->connect();
-                $stmt = $pdo->prepare('INSERT INTO chars (user_id, name) VALUES (?, ?)');
+                $stmt = $this->pdo->prepare('INSERT INTO chars (user_id, name) VALUES (?, ?)');
                 $stmt->execute(array($user_id, $name));
                 return "done  todo api errorhandling";
             }
@@ -63,9 +63,7 @@ class Character {
         $character_name=$data->character_name;
         if (isset($user_id) && isset($character_id) && isset($character_name) ) {
             if ((is_valid('numeric', $user_id) == true) && (is_valid('numeric', $character_id) == true) && (is_valid('alphanumeric_s3', $character_name) == true) ) {
-                $pdo = new DB();
-                $pdo = $pdo->connect();
-                $stmt = $pdo->prepare('UPDATE chars SET name = :character_name WHERE id = :character_id AND user_id = :user_id');
+                $stmt = $this->pdo->prepare('UPDATE chars SET name = :character_name WHERE id = :character_id AND user_id = :user_id');
                 $stmt->execute(array($character_name, $character_id, $user_id));
                 return array(message => 'API DONE TODO..');
             }
@@ -78,9 +76,7 @@ class Character {
         $character_id=$data->character_id;
         if (isset($character_id)) {
             if (is_valid('numeric', $character_id) == true) {
-                $pdo = new DB();
-                $pdo = $pdo->connect();
-                $stmt = $pdo->prepare('DELETE FROM chars WHERE id  = :character_id AND user_id = :user_id');
+                $stmt = $this->pdo->prepare('DELETE FROM chars WHERE id  = :character_id AND user_id = :user_id');
                 $stmt->execute(array($character_id, $user_id));
                 return array(message => 'done TODO: errorhandling');
             }
