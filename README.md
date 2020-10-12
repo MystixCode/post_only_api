@@ -1,11 +1,10 @@
 # API
 POST based JWT API that supports 'services' and actions with permissions
 
-## Example
 
-### user login
+## user login
 
-#### Request payload:
+### Request payload:
 ```
 {
     "service":"user",
@@ -17,7 +16,7 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-#### Response payload:
+### Response payload:
 ```
 {
     "service":"user",
@@ -28,9 +27,9 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-### user register
+## user register
 
-#### Request payload:
+### Request payload:
 ```
 {
     "service":"user",
@@ -44,7 +43,7 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-#### Response payload:
+### Response payload:
 ```
 {
     "service":"user",
@@ -55,9 +54,9 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-### character get
+## character get
 
-#### Request payload:
+### Request payload:
 ```
 {
     "service":"character",
@@ -68,7 +67,7 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-#### Response payload:
+### Response payload:
 ```
 {
     "service": "character",
@@ -80,9 +79,9 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-### character list
+## character list
 
-#### Request payload:
+### Request payload:
 ```
 {
     "service":"character",
@@ -90,7 +89,7 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-#### Response payload:
+### Response payload:
 ```
 {
     "service": "character",
@@ -108,9 +107,9 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-### character edit
+## character edit
 
-#### Request payload:
+### Request payload:
 ```
 {
     "service":"character",
@@ -122,7 +121,7 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-#### Response payload:
+### Response payload:
 ```
 {
     "service": "character",
@@ -133,9 +132,9 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-### character delete
+## character delete
 
-#### Request payload:
+### Request payload:
 ```
 {
     "service":"character",
@@ -146,7 +145,7 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-#### Response payload:
+### Response payload:
 ```
 {
     "service":"character",
