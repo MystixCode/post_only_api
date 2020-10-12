@@ -5,7 +5,7 @@ A service is just a php class with functions in it. This functions are the actio
 With the [client project](https://github.com/MystixGame/client) its possible to create new services and client pages that use them.
 
 ## Installation
-- copy it to a properly configured https webserver ex: https://api.testest.xyz
+- copy it to a [https webserver](https://github.com/MystixCode/webserver_install) ex: https://api.testest.xyz
 - change settings in conf.ini file
 - execute db.sql to set up some tables and default content
 
