@@ -4,8 +4,9 @@ POST based JWT API that supports 'services' and actions with permissions
 ## Example
 
 ### user login
+
+#### Request payload:
 ```
-Request payload:
 {
     "service":"user",
     "action":"login",
@@ -14,8 +15,10 @@ Request payload:
         "password":"testpassword"
     }
 }
+```
 
-Response payload:
+#### Response payload:
+```
 {
     "service":"user",
     "action":"login",
@@ -26,8 +29,9 @@ Response payload:
 ```
 
 ### user register
+
+#### Request payload:
 ```
-Request payload:
 {
     "service":"user",
     "action":"register",
@@ -38,8 +42,10 @@ Request payload:
         "password2":"testuser"
     }
 }
+```
 
-Response payload:
+#### Response payload:
+```
 {
     "service":"user",
     "action":"register",
@@ -50,8 +56,9 @@ Response payload:
 ```
 
 ### character get
+
+#### Request payload:
 ```
-Request payload:
 {
     "service":"character",
     "action":"get",
@@ -59,8 +66,10 @@ Request payload:
         "character_id":"1"
     }
 }
+```
 
-Response payload:
+#### Response payload:
+```
 {
     "service": "character",
     "action": "get",
@@ -72,14 +81,17 @@ Response payload:
 ```
 
 ### character list
+
+#### Request payload:
 ```
-Request payload:
 {
     "service":"character",
     "action":"list"
 }
+```
 
-Response payload:
+#### Response payload:
+```
 {
     "service": "character",
     "action": "list",
@@ -97,8 +109,9 @@ Response payload:
 ```
 
 ### character edit
+
+#### Request payload:
 ```
-Request payload:
 {
     "service":"character",
     "action":"edit",
@@ -107,8 +120,10 @@ Request payload:
         "character_name":"charname"
     }
 }
+```
 
-Response payload:
+#### Response payload:
+```
 {
     "service": "character",
     "action": "edit",
@@ -119,8 +134,9 @@ Response payload:
 ```
 
 ### character delete
+
+#### Request payload:
 ```
-Request payload:
 {
     "service":"character",
     "action":"delete",
@@ -128,8 +144,10 @@ Request payload:
         "character_id":"24"
     }
 }
+```
 
-Response payload:
+#### Response payload:
+```
 {
     "service":"character",
     "action":"delete",
