@@ -1,11 +1,20 @@
 # API
-POST based JWT API that supports 'services' and actions with permissions
+API written in PHP 7.3 that supports services and actions with permissions.
+Accepts only POST requests and uses jwt for authentication.
+A service is just a php class with functions in it. This functions are the actions with permissions via roles.
+With the [client project](https://github.com/MystixGame/client) its possible to create new services and client pages that use them.
 
+## Installation
+- copy it to a properly configured https webserver ex: https://api.testest.xyz
+- change settings in conf.ini file
+- execute db.sql to set up some tables and default content
 
-## user login
+## Usage
 
-### Request payload:
-```
+### user login
+
+Request payload:
+```json
 {
     "service":"user",
     "action":"login",
@@ -16,8 +25,8 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-### Response payload:
-```
+Response payload:
+```json
 {
     "service":"user",
     "action":"login",
@@ -27,10 +36,10 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-## user register
+### user register
 
-### Request payload:
-```
+Request payload:
+```json
 {
     "service":"user",
     "action":"register",
@@ -43,8 +52,8 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-### Response payload:
-```
+Response payload:
+```json
 {
     "service":"user",
     "action":"register",
@@ -54,10 +63,10 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-## character get
+### character get
 
-### Request payload:
-```
+Request payload:
+```json
 {
     "service":"character",
     "action":"get",
@@ -67,8 +76,8 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-### Response payload:
-```
+Response payload:
+```json
 {
     "service": "character",
     "action": "get",
@@ -79,18 +88,18 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-## character list
+### character list
 
-### Request payload:
-```
+Request payload:
+```json
 {
     "service":"character",
     "action":"list"
 }
 ```
 
-### Response payload:
-```
+Response payload:
+```json
 {
     "service": "character",
     "action": "list",
@@ -107,10 +116,10 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-## character edit
+### character edit
 
-### Request payload:
-```
+Request payload:
+```json
 {
     "service":"character",
     "action":"edit",
@@ -121,8 +130,8 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-### Response payload:
-```
+Response payload:
+```json
 {
     "service": "character",
     "action": "edit",
@@ -132,10 +141,10 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-## character delete
+### character delete
 
-### Request payload:
-```
+Request payload:
+```json
 {
     "service":"character",
     "action":"delete",
@@ -145,8 +154,8 @@ POST based JWT API that supports 'services' and actions with permissions
 }
 ```
 
-### Response payload:
-```
+Response payload:
+```json
 {
     "service":"character",
     "action":"delete",
