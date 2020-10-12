@@ -314,26 +314,38 @@ class User {
 
     ## LIST ALL PERMISSION ####################################################################
     public function listAllPermission($data) {
-        $stmt = $this->pdo->prepare('SELECT permission.name as "permission_name", role.name as "role_name" FROM permission JOIN role_permission ON role_permission.permission_id = permission.id JOIN role ON role.id = role_permission.role_id ORDER BY permission.name;');
+        $stmt = $this->pdo->prepare('SELECT role.id as "role_id", role.name as "role_name" FROM role;');
         $stmt->execute();
-        $payload=array();
-        $data = $stmt->fetchAll();
-        foreach ($data as $row) {
-            $alreadyexists = false;
-            foreach ($payload as $key=>$item){
-                   if (isset($item['permission_name']) && $item['permission_name'] == $row['permission_name']) {
-                       $payload[$key]['roles'][] = $row['role_name'];
-                       $alreadyexists = true;
-                   }
-               }
-             if ($alreadyexists == false){
-                 $entry = array();
-                 $entry['permission_name']=$row['permission_name'];
-                 $entry['roles'][]=$row['role_name'];
-                 $payload[]=$entry;
-             }
+        $data1 = $stmt->fetchAll();
+        $roles = array();
+        foreach ($data1 as $key=>$role) {
+            $roles[$key]['role_id']=$role['role_id'];
+            $roles[$key]['role_name']=$role['role_name'];
         }
+
+        $stmt = $this->pdo->prepare('SELECT permission.id as "permission_id", permission.name as "permission_name" FROM permission;');
+        $stmt->execute();
+        $data2 = $stmt->fetchAll();
+        $permissions=array();
+        foreach ($data2 as $key=>$row){
+            $permissions[$key]['permission_id']=$row['permission_id'];
+            $permissions[$key]['permission_name']=$row['permission_name'];
+
+            $permission_id=$row['permission_id'];
+            $stmtx = $this->pdo->prepare('SELECT role.id as "role_id", role.name as "role_name" FROM role JOIN role_permission ON role_permission.role_id=role.id WHERE permission_id = :permission_id;');
+            $stmtx->execute(array($permission_id));
+
+            $data3 = $stmtx->fetchAll();
+            foreach ($data3 as $keyx=>$rolex) {
+                $permissions[$key]['roles'][$keyx] = $rolex['role_id'];
+            }
+        }
+            //TODO get all roles this permission has and check it true in permissions array
+        $payload=array();
+        $payload['roles'] = $roles;
+        $payload['permissions'] = $permissions;
         return $payload;
+
     }
 
     ## EDIT ALL PERMISSION ####################################################################

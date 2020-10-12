@@ -9,11 +9,16 @@ require("validation.php");
 
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Max-Age: 3600");
-header("Content-Type: application/json; charset=UTF-8");
 header('Access-Control-Allow-Headers: *');
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    echo '<h1>Mystix API</h1>';
+    echo '<a href="https://github.com/MystixGame/api">Mystix API on Github</a>';
+}
 
 ## if POST -> check token and permission and then run service->action ###########
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header("Content-Type: application/json; charset=UTF-8");
     $json = file_get_contents('php://input');
     $data = @json_decode($json);
     if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
