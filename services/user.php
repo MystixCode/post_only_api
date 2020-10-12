@@ -2,6 +2,10 @@
 ################################################################################
 # User Class                                                                   #
 ################################################################################
+
+#TODO permission service handles Permissions and maybe checkPermission and execute function
+#TODO role service handles  get role editrole etc
+#TODO naming off things add create etc login/register
 class User {
     private $pdo;
 
@@ -28,15 +32,9 @@ class User {
                             $user_id=$row['id'];
                             $role_names[]=$row['role_name'];
                         }
-                        if (password_verify($password, $hash)) //if pw hash equals hash from db
-                        {
-                            //success -> Create token
+                        if (password_verify($password, $hash)) {
                             $token = new JWT();
                             $token = $token->createToken($user_id, $name , $role_names);
-                            #TODO on gameserver
-                            # request signature key and token from api and store in variable ?? needed?
-                            # check every udp packet for token and compare, and check signature if ok proceed: https://auth0.com/docs/tokens/guides/jwt/validate-jwt
-                            # renew token before expired if logged in and still the same ip and profile?? <-- on game server change expiration?
                             return array(message => 'loggedin successful');
                         }
                     }
@@ -47,7 +45,7 @@ class User {
 
     ## REGISTER ################################################################
     public function register($data) {
-        $name=$data->name;	#TODO validate input   #TODO only register user if not user with same name exists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        $name=$data->name;
         $email=$data->email;
         $password=$data->password;
         $password2=$data->password2;
@@ -89,7 +87,6 @@ class User {
         $payload=array();
         $data = $stmt->fetchAll();
         foreach ($data as $row) {
-            //create entry array
             $entry = array();
             $entry['user_id']=$row['id'];
             $entry['user_name']=$row['name'];
@@ -129,9 +126,9 @@ class User {
             }
         }
     }
+
     ## GET #####################################################################
     public function get($data, $user_id) {
-        //echo $data['payload'];
         $stmt = $this->pdo->prepare('SELECT user.name, user.email, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.id = :user_id');
         $stmt->execute(array($user_id));
         $user_name='';
@@ -150,7 +147,6 @@ class User {
     public function editOther($data, $user_id) {
         $user_id=$data->id;
         if (isset($user_id)) {
-
             if (is_valid('numeric', $user_id) == true) {
                 $name=$data->name;	#TODO validate input   #TODO only register user if not user with same name exists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 $email=$data->email;
@@ -183,9 +179,10 @@ class User {
             }
         }
     }
+
     ## EDIT ####################################################################
     public function edit($data, $user_id) {
-        $name=$data->name;	#TODO validate input   #TODO only register user if not user with same name exists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        $name=$data->name;
         $email=$data->email;
         $password=$data->password;
         $password2=$data->password2;
@@ -235,37 +232,11 @@ class User {
             if (is_valid('numeric', $id) == true) {
                 $stmt = $this->pdo->prepare('DELETE FROM user_role WHERE user_id = :user_id');
                 $stmt->execute(array($id));
-
                 $stmt = $this->pdo->prepare('DELETE FROM user WHERE id = :user_id');
                 $stmt->execute(array($id));
-
                 return array(message => 'done TODO: errorhandling');
             }
         }
-    }
-
-    ## LIST ALL PERMISSION ####################################################################
-    public function listAllPermission($data) {
-        $stmt = $this->pdo->prepare('SELECT permission.name as "permission_name", role.name as "role_name" FROM permission JOIN role_permission ON role_permission.permission_id = permission.id JOIN role ON role.id = role_permission.role_id ORDER BY permission.name;');
-        $stmt->execute();
-        $payload=array();
-        $data = $stmt->fetchAll();
-        foreach ($data as $row) {
-            $alreadyexists = false;
-            foreach ($payload as $key=>$item){
-                   if (isset($item['permission_name']) && $item['permission_name'] == $row['permission_name']) {
-                       $payload[$key]['roles'][] = $row['role_name'];
-                       $alreadyexists = true;
-                   }
-               }
-             if ($alreadyexists == false){
-                 $entry = array();
-                 $entry['permission_name']=$row['permission_name'];
-                 $entry['roles'][]=$row['role_name'];
-                 $payload[]=$entry;
-             }
-        }
-        return $payload;
     }
 
     ## LIST Roles ####################################################################
@@ -288,7 +259,6 @@ class User {
             if (is_valid('numeric', $id) == true) {
                 $stmt = $this->pdo->prepare('SELECT role.id as "role_id", role.name as "role_name", role.name as "role_name" FROM role WHERE role.id=:role_id;');
                 $stmt->execute(array($id));
-
                 $data = $stmt->fetchAll();
                 foreach ($data as $key =>$row) {
                     $payload['role_id']=$row['role_id'];
@@ -297,8 +267,8 @@ class User {
                 return $payload;
             }
         }
-
     }
+
     ## Edit Roles ####################################################################
     public function editRole($data) {
 
@@ -330,87 +300,45 @@ class User {
         $role_id=$data->role_id;
         if (isset($role_id)) {
             if (is_valid('numeric', $role_id) == true) {
-
                 $stmt = $this->pdo->prepare('DELETE FROM role_permission WHERE role_id  = :role_id');
                 $stmt->execute(array($role_id));
-
                 $stmt = $this->pdo->prepare('DELETE FROM user_role WHERE role_id  = :role_id');
                 $stmt->execute(array($role_id));
-
                 $stmt = $this->pdo->prepare('DELETE FROM role WHERE id  = :role_id');
                 $stmt->execute(array($role_id));
-
                 return array(message => 'done TODO: errorhandling');
             }
         }
         return 'error';
     }
 
-    ## EDIT ALL PERMISSION ####################################################################
-    //TODO make this richtig
-    //TODO if new exists in db --------------> do nothing
-    //TODO else -----------------------------> insert into db
-    //TODO if exists in db but not in new ---> delete from db
-    //DU hier??
-    //ja guuuud
-    public function editAllPermission($data) {
-        //$this->pdo->query('TRUNCATE TABLE role_permission');
-        // foreach ($data as $value) {
-        //     $stmt = $this->pdo->prepare('SELECT id FROM permission WHERE name = :permission_name');
-        //     $stmt->execute(array($value->permission_name));
-        //     $permission_id = $stmt->fetchColumn();
-        //
-        //     foreach ($value->roles as $role) {
-        //
-        //         $stmt = $this->pdo->prepare('SELECT id FROM role WHERE name = :role');
-        //         $stmt->execute(array($role));
-        //         $role_id = $stmt->fetchColumn();
-        //
-        //         $stmt = $this->pdo->prepare('SELECT * FROM role_permission WHERE role_id = :role_id AND permission_id = :permission_id');
-        //         $stmt->execute(array($role_id, $permission_id));
-        //         $role_permission = $stmt->fetchAll();
-        //
-        //         $role_permission_id = "";
-        //         foreach ($role_permission as $rp) {
-        //             $role_permission_id .= $rp['id'] . ', ';
-        //         }
-        //         $role_permission_id = substr($role_permission_id, 0, -2);
-        //
-        //         $stmt = $this->pdo->prepare('DELETE FROM role_permission WHERE id NOT IN :role_permission_id');
-        //         $stmt->execute(array($role_permission_id));
-        //
-        //         //string mit alle id vo neue permission und role z.B 1, 2, 3 use DELETE NOT IN grad erstellte string
-        //         //sgliche mit select und all
-        //         $stmt = $this->pdo->prepare('INSERT INTO role_permission (role_id, permission_id) VALUES (:role_id, :permission_id)');
-        //         $stmt->execute(array($role_id, $permission_id));
-        //     }
-        // }
-        // return 'blub';
-        // $permission_id_array = array();
-        // $permission_id_string = "";
-        // $role_id_array = array();
-        // $role_id_string = "";
-        // foreach ($data as $d) {
-        //   $stmt = $this->pdo->prepare('SELECT id from permission WHERE name = :name');
-        //   $stmt->execute(array($d->permission_name));
-        //   $permission_id = $stmt->fetchColumn();
-        //   array_push($permission_id_array, $permission_id);
-        //   $permission_id_string .= $permission_id . ', ';
-        //   foreach ($d->roles as $role) {
-        //     $stmt = $this->pdo->prepare('SELECT id FROM role WHERE name = :role');
-        //     $stmt->execute(array($role));
-        //     $role_id = $stmt->fetchColumn();
-        //     array_push($role_id_array, $role_id);
-        //     $role_id_string .= $role_id . ', ';
-        //   }
-        // }
-        // $permission_id_string = substr($permission_id_string, 0, -2);
-        // $role_id_string = substr($role_id_string, 0, -2);
-        //
-        // $stmt = $this->pdo->prepare('DELETE FROM role_permission WHERE role_id NOT IN (?) AND permission_id NOT IN (?)');
-        // $stmt->execute(array($role_id_string, $permission_id_string));
+    ## LIST ALL PERMISSION ####################################################################
+    public function listAllPermission($data) {
+        $stmt = $this->pdo->prepare('SELECT permission.name as "permission_name", role.name as "role_name" FROM permission JOIN role_permission ON role_permission.permission_id = permission.id JOIN role ON role.id = role_permission.role_id ORDER BY permission.name;');
+        $stmt->execute();
+        $payload=array();
+        $data = $stmt->fetchAll();
+        foreach ($data as $row) {
+            $alreadyexists = false;
+            foreach ($payload as $key=>$item){
+                   if (isset($item['permission_name']) && $item['permission_name'] == $row['permission_name']) {
+                       $payload[$key]['roles'][] = $row['role_name'];
+                       $alreadyexists = true;
+                   }
+               }
+             if ($alreadyexists == false){
+                 $entry = array();
+                 $entry['permission_name']=$row['permission_name'];
+                 $entry['roles'][]=$row['role_name'];
+                 $payload[]=$entry;
+             }
+        }
+        return $payload;
+    }
 
-        //lost es goht so ned bi aber zu kapputt für heut i gang go penne
+    ## EDIT ALL PERMISSION ####################################################################
+    public function editAllPermission($data) {
+
     }
 }
 

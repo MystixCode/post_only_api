@@ -22,13 +22,11 @@ class Page {
          if ($page_name && $page_path) {
              $file=$page_path . '.html';
              $file_path = '/var/www/client/pages' . $file;
-
              $file=$page_path . '.html';
              if(!file_exists($file_path)){
                  mkdir(dirname($file_path), 0777, true); //TODO correct permissionis cant delete folders atm
                         // Some simple example content.
-                 if (file_put_contents($file_path, $page_content) !== false)
-                 {
+                 if (file_put_contents($file_path, $page_content) !== false) {
                      return array(message => 'Created file: ' . $file);
                  }
              }

@@ -39,7 +39,6 @@ class $service_name {
                         $pdo = $pdo->connect();
                         foreach ($service_actions as $key => $action) {
                             if (is_valid('alphanumeric', $action) == true){
-
                                 try
                                 {
                                     //add each action to permission table
@@ -57,7 +56,6 @@ class $service_name {
                                 {
                                     return $e->getMessage();
                                 }
-
                                 $insert = "
     ## $action ####################################################################
     public function $action(\$data, \$user_id) {
@@ -67,7 +65,6 @@ class $service_name {
                             }
                         }
                     }
-
                     if (file_put_contents($file_path, $page_content) !== false)
                     {
                             return array(message => 'Created file: ' . $file_path);

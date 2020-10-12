@@ -17,7 +17,6 @@ class Character {
         $payload=array();
         $data = $stmt->fetchAll();
         foreach ($data as $row) {
-            //create entry array
             if ($row['id'] !== null AND $row['name'] !== null ){
                 $entry = array();
                 $entry['character_id']=$row['id'];
