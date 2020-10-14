@@ -350,10 +350,14 @@ class User {
 
     ## addPermissionToRole #####################################################
     public function addPermissionToRole($data) {
+        //TODO if permission_id and role_id not empty and valid numeric
+        //TODO insert into role_permission
         return array(message => 'TODO: addPermissionToRole');
     }
     ## addPermissionToRole #####################################################
     public function removePermissionFromRole($data) {
+        //TODO if permission_id and role_id not empty and valid numeric
+        //TODO delete from role_permission
         return array(message => 'TODO: removePermissionFromRole');
     }
 
