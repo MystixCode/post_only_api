@@ -4,7 +4,7 @@ CREATE DATABASE api;
 
 use api;
 
-CREATE TABLE user (
+CREATE TABLE IF NOT EXISTS user (
    id INT NOT NULL AUTO_INCREMENT,
    hash VARCHAR(255) NOT NULL,
    name VARCHAR(40) NOT NULL,
@@ -17,12 +17,12 @@ INSERT INTO user (
     name,
     email
 ) VALUES (
-    'zturtzitziztiutoo',
-    'Mystix',
-    'mystix@mystixgame.tk'
+    '$2y$10$vlacWXhzkt8uzdL3bwWkfOBsw6.67U4GtH4p2YCi6vEx1gr8HfMNi',
+    'Admin',
+    'admin@mystixgame.tk'
 );
 
-CREATE TABLE chars (
+CREATE TABLE IF NOT EXISTS chars (
    id INT NOT NULL AUTO_INCREMENT,
    user_id int NOT NULL,
    name VARCHAR(40) NOT NULL,
@@ -30,28 +30,15 @@ CREATE TABLE chars (
    FOREIGN KEY (user_id) REFERENCES user (id)
 );
 
-INSERT INTO chars (
-    user_id,
-    name
-) VALUES (
-    3,
-    'charname1'
-);
-
-CREATE TABLE role (
+CREATE TABLE IF NOT EXISTS role (
    id INT NOT NULL AUTO_INCREMENT,
    name VARCHAR(40) NOT NULL,
    PRIMARY KEY (id)
 );
 
-INSERT INTO role (
-    name
-) VALUES
-    ('admin'),
-    ('user')
-;
+INSERT INTO role (name) VALUES ('admin'),('user'),('anon');
 
-CREATE TABLE user_role (
+CREATE TABLE IF NOT EXISTS user_role (
    id INT NOT NULL AUTO_INCREMENT,
    user_id int NOT NULL,
    role_id int NOT NULL,
@@ -60,28 +47,19 @@ CREATE TABLE user_role (
    FOREIGN KEY (role_id) REFERENCES role (id)
 );
 
-INSERT INTO user_role (
-    user_id,
-    role_id
-) VALUES (
-    3,
-    1
-);
+INSERT INTO user_role (user_id,role_id) VALUES (1, 1);
 
-CREATE TABLE permission (
+CREATE TABLE IF NOT EXISTS permission (
    id INT NOT NULL AUTO_INCREMENT,
    name VARCHAR(40) NOT NULL,
    PRIMARY KEY (id)
 );
 
-INSERT INTO permission (
-    name
-) VALUES
-    ('testberechtigung1'),
-    ('testberechtigung2')
-;
+INSERT INTO permission (name) VALUES('user_register'), ('user_login'), ('user_get'), ('user_edit'), ('user_delete'), ('user_list'), ('user_getOther'), ('user_editOther'), ('user_deleteOther'), ('user_addRole'), ('user_getRole'), ('user_editRole'), ('user_deleteRole'), ('user_listRoles'), ('user_listAllPermission'), ('user_addPermissionToRole'), ('user_removePermissionFromRole');
+INSERT INTO permission (name) VALUES('page_add'), ('service_add');
+INSERT INTO permission (name) VALUES('character_create'), ('character_get'), ('character_edit'), ('character_delete'), ('character_list');
 
-CREATE TABLE role_permission (
+CREATE TABLE IF NOT EXISTS role_permission (
    id INT NOT NULL AUTO_INCREMENT,
    role_id int NOT NULL,
    permission_id int NOT NULL,
@@ -90,46 +68,34 @@ CREATE TABLE role_permission (
    FOREIGN KEY (permission_id) REFERENCES permission (id)
 );
 
-INSERT INTO role_permission (
-    role_id,
-    permission_id
-) VALUES (
-    1,
-    1
-);
-
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 1);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 2);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 3);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 4);
-INSERT INTO role_permission (role_id, permission_id) VALUES (2, 4);
-INSERT INTO role_permission (role_id, permission_id) VALUES (2, 3);
-INSERT INTO role_permission (role_id, permission_id) VALUES (2, 5);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 5);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 6);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 7);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 8);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 9);
-INSERT INTO role_permission (role_id, permission_id) VALUES (2, 9);
+INSERT INTO role_permission (role_id, permission_id) VALUES (1, 10);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 11);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 12);
-INSERT INTO role_permission (role_id, permission_id) VALUES (2, 12);
-INSERT INTO role_permission (role_id, permission_id) VALUES (1, 12);
-INSERT INTO role_permission (role_id, permission_id) VALUES (2, 13);
+INSERT INTO role_permission (role_id, permission_id) VALUES (1, 13);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 14);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 15);
-INSERT INTO role_permission (role_id, permission_id) VALUES (2, 15);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 16);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 17);
+INSERT INTO role_permission (role_id, permission_id) VALUES (1, 18);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 19);
-INSERT INTO role_permission (role_id, permission_id) VALUES (2, 19);
-INSERT INTO role_permission (role_id, permission_id) VALUES (3, 19);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 20);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 21);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 22);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 23);
-INSERT INTO role_permission (role_id, permission_id) VALUES (2, 23);
-INSERT INTO role_permission (role_id, permission_id) VALUES (3, 23);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 24);
-
-/*TODO insert admin and user role_permission etc*/
+INSERT INTO role_permission (role_id, permission_id) VALUES (2, 1);
+INSERT INTO role_permission (role_id, permission_id) VALUES (2, 2);
+INSERT INTO role_permission (role_id, permission_id) VALUES (2, 3);
+INSERT INTO role_permission (role_id, permission_id) VALUES (2, 4);
+INSERT INTO role_permission (role_id, permission_id) VALUES (2, 5);
+INSERT INTO role_permission (role_id, permission_id) VALUES (3, 1);
+INSERT INTO role_permission (role_id, permission_id) VALUES (3, 2);

@@ -19,8 +19,8 @@ Request payload:
     "service":"user",
     "action":"login",
     "payload":{
-        "name":"testuser",
-        "password":"testpassword"
+        "name":"Admin",
+        "password":"changethispassword"
     }
 }
 ```

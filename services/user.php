@@ -241,7 +241,7 @@ class User {
 
     ## LIST Roles ####################################################################
     public function listRoles($data) {
-        $stmt = $this->pdo->prepare('SELECT role.id as "role_id", role.name as "role_name", role.name as "role_name" FROM role;');
+        $stmt = $this->pdo->prepare('SELECT id as "role_id", name as "role_name" FROM role;');
         $stmt->execute();
         $payload=array();
         $data = $stmt->fetchAll();
@@ -348,10 +348,16 @@ class User {
 
     }
 
-    ## EDIT ALL PERMISSION ####################################################################
-    public function editAllPermission($data) {
-
+    ## addPermissionToRole #####################################################
+    public function addPermissionToRole($data) {
+        return array(message => 'TODO: addPermissionToRole');
     }
+    ## addPermissionToRole #####################################################
+    public function removePermissionFromRole($data) {
+        return array(message => 'TODO: removePermissionFromRole');
+    }
+
+
 }
 
 ?>
