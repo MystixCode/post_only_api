@@ -3,7 +3,7 @@
 # User Class                                                                   #
 ################################################################################
 
-#TODO permission service handles Permissions and maybe checkPermission and execute function
+#TODO permission service handles Permissions and maybe checkPermissionandexecute function
 #TODO role service handles  get role editrole etc
 #TODO naming off things add create etc login/register
 class User {
@@ -63,9 +63,8 @@ class User {
                                     $hash = password_hash($password, PASSWORD_DEFAULT);
                                     $stmt = $this->pdo->prepare('INSERT INTO user (hash, name, email) VALUES (?, ?, ?)');
                                     $stmt->execute(array($hash, $name, $email));
-                                    //TODO ADD default Permissions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                     $user_id = $this->pdo->lastInsertId();
-                                    $role_id = 2; //DEFAULT ROLE
+                                    $role_id = 2; //DEFAULT ROLE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                     $stmtz = $this->pdo->prepare('INSERT INTO user_role (user_id, role_id) VALUES (?, ?)');
                                     $stmtz->execute(array($user_id, $role_id));
                                     return array(message => 'user doesnt already exist - register done');
@@ -106,7 +105,7 @@ class User {
         return $payload;
     }
 
-    ## GETOTHER #####################################################################
+    ## GETOTHER ################################################################
     public function getOther($data, $user_id) {
         $user_id=$data->id;
         if (isset($user_id)) {
@@ -143,7 +142,7 @@ class User {
         return array(user_id => $user_id, user_name => $user_name, user_email => $user_email, roles => $role_names);
     }
 
-    ## EDIT Other ####################################################################
+    ## EDIT Other ##############################################################
     public function editOther($data, $user_id) {
         $user_id=$data->id;
         if (isset($user_id)) {
@@ -224,7 +223,7 @@ class User {
         return array(message => 'done TODO: errorhandling');
     }
 
-    ## DELETE Other##################################################################
+    ## DELETE Other#############################################################
     public function deleteOther($data, $user_id)
     {
         $id=$data->id;
@@ -239,7 +238,7 @@ class User {
         }
     }
 
-    ## LIST Roles ####################################################################
+    ## LIST Roles ##############################################################
     public function listRoles($data) {
         $stmt = $this->pdo->prepare('SELECT id as "role_id", name as "role_name" FROM role;');
         $stmt->execute();
@@ -252,7 +251,7 @@ class User {
         return $payload;
     }
 
-    ## GET Roles ####################################################################
+    ## GET Roles ###############################################################
     public function getRole($data) {
         $id=$data->id;
         if (isset($id)) {
@@ -269,7 +268,7 @@ class User {
         }
     }
 
-    ## Edit Roles ####################################################################
+    ## Edit Roles ##############################################################
     public function editRole($data) {
 
         $role_id=$data->role_id;
@@ -284,7 +283,7 @@ class User {
         return "api error editRole";
     }
 
-    ## Add Role ####################################################################
+    ## Add Role ################################################################
     public function addRole($data) {
         $name=$data->name;
         if (!empty($name)){
@@ -295,7 +294,7 @@ class User {
             }
         }
     }
-    ## Delete Role ####################################################################
+    ## Delete Role #############################################################
     public function deleteRole($data) {
         $role_id=$data->role_id;
         if (isset($role_id)) {
@@ -312,7 +311,7 @@ class User {
         return 'error';
     }
 
-    ## LIST ALL PERMISSION ####################################################################
+    ## LIST ALL PERMISSION #####################################################
     public function listAllPermission($data) {
         $stmt = $this->pdo->prepare('SELECT role.id as "role_id", role.name as "role_name" FROM role;');
         $stmt->execute();
@@ -322,7 +321,6 @@ class User {
             $roles[$key]['role_id']=$role['role_id'];
             $roles[$key]['role_name']=$role['role_name'];
         }
-
         $stmt = $this->pdo->prepare('SELECT permission.id as "permission_id", permission.name as "permission_name" FROM permission;');
         $stmt->execute();
         $data2 = $stmt->fetchAll();
@@ -330,7 +328,6 @@ class User {
         foreach ($data2 as $key=>$row){
             $permissions[$key]['permission_id']=$row['permission_id'];
             $permissions[$key]['permission_name']=$row['permission_name'];
-
             $permission_id=$row['permission_id'];
             $stmtx = $this->pdo->prepare('SELECT role.id as "role_id", role.name as "role_name" FROM role JOIN role_permission ON role_permission.role_id=role.id WHERE permission_id = :permission_id;');
             $stmtx->execute(array($permission_id));
@@ -340,7 +337,6 @@ class User {
                 $permissions[$key]['roles'][$keyx] = $rolex['role_id'];
             }
         }
-            //TODO get all roles this permission has and check it true in permissions array
         $payload=array();
         $payload['roles'] = $roles;
         $payload['permissions'] = $permissions;
@@ -350,15 +346,26 @@ class User {
 
     ## addPermissionToRole #####################################################
     public function addPermissionToRole($data) {
-        //TODO if permission_id and role_id not empty and valid numeric
-        //TODO insert into role_permission
-        return array(message => 'TODO: addPermissionToRole');
+        if (!empty($data->role_id) && !empty($data->permission_id)){
+            if (is_valid('numeric', $data->role_id) == true && is_valid('numeric', $data->permission_id) == true) {
+                //TODO if permission_id and role_id not already in role_permission
+                $stmt = $this->pdo->prepare('INSERT INTO role_permission (role_id, permission_id) VALUES (?,?)');
+                $stmt->execute(array($data->role_id,$data->permission_id));
+                return array(message => 'addPermissionToRole done');
+            }
+        }
+        return array(message => 'addPermissionToRole error');
     }
-    ## addPermissionToRole #####################################################
+    ## removePermissionFromRole ################################################
     public function removePermissionFromRole($data) {
-        //TODO if permission_id and role_id not empty and valid numeric
-        //TODO delete from role_permission
-        return array(message => 'TODO: removePermissionFromRole');
+        if (!empty($data->role_id) && !empty($data->permission_id)){
+            if (is_valid('numeric', $data->role_id) == true && is_valid('numeric', $data->permission_id) == true) {
+                $stmt = $this->pdo->prepare('DELETE FROM role_permission WHERE role_id  = ? AND permission_id = ?');
+                $stmt->execute(array($data->role_id,$data->permission_id));
+                return array(message => 'removePermissionFromRole done');
+            }
+        }
+        return array(message => 'removePermissionFromRole error');
     }
 
 
