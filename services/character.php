@@ -10,21 +10,16 @@ class Character {
         $this->pdo = $db->connect();
     }
 
-    ## LIST ####################################################################
-    public function list($data, $user_id) {
-        $stmt = $this->pdo->prepare('SELECT id, name FROM chars WHERE user_id = :user_id');
-        $stmt->execute(['user_id' => $user_id]);
-        $payload=array();
-        $data = $stmt->fetchAll();
-        foreach ($data as $row) {
-            if ($row['id'] !== null AND $row['name'] !== null ){
-                $entry = array();
-                $entry['character_id']=$row['id'];
-                $entry['character_name']=$row['name'];
-                $payload[]=$entry;
+    ## add ##################################################################
+    public function add($data, $user_id) {
+        $name=$data->name;
+        if (!empty($name)){
+            if (is_valid('alphanumeric_s3', $name) == true) {
+                $stmt = $this->pdo->prepare('INSERT INTO chars (user_id, name) VALUES (?, ?)');
+                $stmt->execute(array($user_id, $name));
+                return "done  todo api errorhandling";
             }
         }
-        return $payload;
     }
 
     ## GET #####################################################################
@@ -42,18 +37,6 @@ class Character {
             }
         }
         return array(character_name => 'error', message => 'TODO API character>get');
-    }
-
-    ## Create ##################################################################
-    public function create($data, $user_id) {
-        $name=$data->name;
-        if (!empty($name)){
-            if (is_valid('alphanumeric_s3', $name) == true) {
-                $stmt = $this->pdo->prepare('INSERT INTO chars (user_id, name) VALUES (?, ?)');
-                $stmt->execute(array($user_id, $name));
-                return "done  todo api errorhandling";
-            }
-        }
     }
 
     ## EDIT ####################################################################
@@ -80,6 +63,23 @@ class Character {
                 return array(message => 'done TODO: errorhandling');
             }
         }
+    }
+
+    ## LIST ####################################################################
+    public function list($data, $user_id) {
+        $stmt = $this->pdo->prepare('SELECT id, name FROM chars WHERE user_id = :user_id');
+        $stmt->execute(['user_id' => $user_id]);
+        $payload=array();
+        $data = $stmt->fetchAll();
+        foreach ($data as $row) {
+            if ($row['id'] !== null AND $row['name'] !== null ){
+                $entry = array();
+                $entry['character_id']=$row['id'];
+                $entry['character_name']=$row['name'];
+                $payload[]=$entry;
+            }
+        }
+        return $payload;
     }
 }
 ?>

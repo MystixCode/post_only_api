@@ -55,9 +55,12 @@ CREATE TABLE IF NOT EXISTS permission (
    PRIMARY KEY (id)
 );
 
-INSERT INTO permission (name) VALUES('user_register'), ('user_login'), ('user_get'), ('user_edit'), ('user_delete'), ('user_list'), ('user_getOther'), ('user_editOther'), ('user_deleteOther'), ('user_addRole'), ('user_getRole'), ('user_editRole'), ('user_deleteRole'), ('user_listRoles'), ('user_listAllPermission'), ('user_addPermissionToRole'), ('user_removePermissionFromRole');
-INSERT INTO permission (name) VALUES('page_add'), ('service_add');
-INSERT INTO permission (name) VALUES('character_create'), ('character_get'), ('character_edit'), ('character_delete'), ('character_list');
+INSERT INTO permission (name) VALUES('user_login'), ('user_add'), ('user_get'), ('user_edit'), ('user_delete'), ('user_list'), ('user_getOther'), ('user_editOther'), ('user_deleteOther');
+INSERT INTO permission (name) VALUES('role_add'), ('role_get'), ('role_edit'), ('role_delete'), ('role_list');
+INSERT INTO permission (name) VALUES('permission_list'), ('permission_addToRole'), ('permission_deleteFromRole');
+INSERT INTO permission (name) VALUES('page_add');
+INSERT INTO permission (name) VALUES('service_add');
+INSERT INTO permission (name) VALUES('character_add'), ('character_get'), ('character_edit'), ('character_delete'), ('character_list');
 
 CREATE TABLE IF NOT EXISTS role_permission (
    id INT NOT NULL AUTO_INCREMENT,

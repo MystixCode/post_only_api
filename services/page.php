@@ -3,18 +3,12 @@
 # Character Class                                                              #
 ################################################################################
 class Page {
-
-    ## LIST ####################################################################
-    public function list($data, $user_id) {
-        return array(message => 'TODO page list');
-    }
-
     ## GET #####################################################################
     public function get($data, $user_id) {
         return array(message => 'TODO page get');
     }
 
-    ## Create ##################################################################
+    ## add ##################################################################
     public function add($data, $user_id) {
         $page_name=$data->page_name;
         $page_path=$data->page_path; //    /user/edit
@@ -43,6 +37,11 @@ class Page {
     ## DELETE ##################################################################
     public function delete($data, $user_id) {
         return array(message => 'TODO page delete');
+    }
+
+    ## LIST ####################################################################
+    public function list($data, $user_id) {
+        return array(message => 'TODO page list');
     }
 }
 ?>

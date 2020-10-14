@@ -4,11 +4,6 @@
 ################################################################################
 class Service {
 
-    ## LIST ####################################################################
-    public function list($data, $user_id) {
-        return array(message => 'TODO service list');
-    }
-
     ## GET #####################################################################
     public function get($data, $user_id) {
         return array(message => 'TODO service get');
@@ -93,10 +88,13 @@ class $service_name {
     public function edit($data, $user_id) {
         return array(message => 'TODO service edit');
     }
-
     ## DELETE ##################################################################
     public function delete($data, $user_id) {
         return array(message => 'TODO service delete');
+    }
+    ## LIST ####################################################################
+    public function list($data, $user_id) {
+        return array(message => 'TODO service list');
     }
 }
 ?>
