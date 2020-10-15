@@ -1,11 +1,7 @@
 <?php
 ################################################################################
-# User Class                                                                   #
+# User Service                                                                 #
 ################################################################################
-
-#TODO permission service handles Permissions and maybe checkPermissionandexecute function
-#TODO role service handles  get role editrole etc
-#TODO naming off things add create etc login/register
 class User {
     private $pdo;
 
@@ -22,19 +18,30 @@ class User {
             if (is_valid('alphanumeric_s3', $name)== true) {
                 if (is_valid('alphanumeric_s1', $password)== true) {
                     if (strlen($password) >= 6) {
-                        $stmt = $this->pdo->prepare('SELECT user.id, user.hash, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.name = :name');
-                        $stmt->execute(['name' => $name]);
+
                         $hash = '';
                         $user_id = '';
                         $rolenames = array();
+                        $stmt = $this->pdo->prepare('SELECT user.id, user.hash, role.name as role_name FROM user JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.name = :name');
+                        $stmt->execute(['name' => $name]);
                         while ($row = $stmt->fetch()) {
                             $hash = $row['hash'];
                             $user_id=$row['id'];
                             $role_names[]=$row['role_name'];
                         }
+
                         if (password_verify($password, $hash)) {
                             $token = new JWT();
-                            $token = $token->createToken($user_id, $name , $role_names);
+                            $access_token = $token->createToken($user_id, $name , $role_names);
+                            $refresh_token = $token->createRefreshToken($user_id);
+                            $response = array();
+                            $response["token_type"] = "bearer";
+                            $response["access_token"] = $access_token;
+                            $response["refresh_token"] = $refresh_token;
+                            return $response;
+
+
+
                             return array(message => 'loggedin successful');
                         }
                     }

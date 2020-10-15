@@ -71,6 +71,15 @@ CREATE TABLE IF NOT EXISTS role_permission (
    FOREIGN KEY (permission_id) REFERENCES permission (id)
 );
 
+CREATE TABLE IF NOT EXISTS refresh_token (
+   id INT NOT NULL AUTO_INCREMENT,
+   user_id int NOT NULL,
+   expires int NOT NULL,
+   refresh_token VARCHAR(40),
+   PRIMARY KEY (id),
+   FOREIGN KEY (user_id) REFERENCES user (id)
+);
+
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 1);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 2);
 INSERT INTO role_permission (role_id, permission_id) VALUES (1, 3);

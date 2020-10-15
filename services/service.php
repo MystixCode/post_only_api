@@ -1,6 +1,6 @@
 <?php
 ################################################################################
-# Service Class                                                              #
+# Service service                                                              #
 ################################################################################
 class Service {
 
@@ -28,7 +28,7 @@ class $service_name {
                 $file=strtolower($service_name) . '.php';
                 $file_path = '/var/www/api/services/' . $file;
                 if(!file_exists($file_path)){
-                    mkdir(dirname($file_path), 0777, true); //TODO correct permissionis cant delete folders atm
+                    mkdir(dirname($file_path), 0775, true); //TODO correct permissionis cant delete folders atm
                     if ($service_actions){
                         $pdo = new DB();
                         $pdo = $pdo->connect();

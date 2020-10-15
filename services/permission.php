@@ -1,11 +1,7 @@
 <?php
 ################################################################################
-# User Class                                                                   #
+# Permisssion service                                                          #
 ################################################################################
-
-#TODO permission service handles Permissions and maybe checkPermissionandexecute function
-#TODO role service handles  get role editrole etc
-#TODO naming off things add create etc login/register
 class Permission {
     private $pdo;
 
@@ -52,14 +48,14 @@ class Permission {
         if (!empty($data->role_id) && !empty($data->permission_id)){
             if (is_valid('numeric', $data->role_id) == true && is_valid('numeric', $data->permission_id) == true) {
                 //TODO if permission_id and role_id not already in role_permission
-                $stmt = $this->pdo->prepare('INSERT INTO role_permission (role_id, permission_id) VALUES (?,?)');
-                $stmt->execute(array($data->role_id,$data->permission_id));
+                $stmt = $this->pdo->prepare('INSERT INTO role_permission (role_id, permission_id) VALUES (:role_id,:permission_id)');
+                $stmt->execute(array($data->role_id,$data->permission_id)); //TODO doesnt always work -.-
                 return array(message => 'addPermissionToRole done');
             }
         }
         return array(message => 'addPermissionToRole error');
     }
-    
+
     ## deleteFromRole ##########################################################
     public function deleteFromRole($data) {
         if (!empty($data->role_id) && !empty($data->permission_id)){

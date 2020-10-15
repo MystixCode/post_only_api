@@ -1,11 +1,7 @@
 <?php
 ################################################################################
-# User Class                                                                   #
+# role service                                                                 #
 ################################################################################
-
-#TODO permission service handles Permissions and maybe checkPermissionandexecute function
-#TODO role service handles  get role editrole etc
-#TODO naming off things add create etc login/register
 class Role {
     private $pdo;
 
@@ -13,7 +9,6 @@ class Role {
         $db = new DB();
         $this->pdo = $db->connect();
     }
-
 
     ## GET Role ###############################################################
     public function get($data) {
@@ -34,7 +29,6 @@ class Role {
 
     ## Edit Roles ##############################################################
     public function edit($data) {
-
         $role_id=$data->role_id;
         $role_name=$data->role_name;
         if (isset($role_id) && isset($role_name) ) {
@@ -58,6 +52,7 @@ class Role {
             }
         }
     }
+
     ## Delete Role #############################################################
     public function delete($data) {
         $role_id=$data->role_id;

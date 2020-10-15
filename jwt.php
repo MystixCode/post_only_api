@@ -3,17 +3,63 @@
 # JWT Class                                                                   #
 ################################################################################
 class JWT {
+    private $pdo;
 
+    function __construct() {
+        $db = new DB();
+        $this->pdo = $db->connect();
+    }
+
+    ## create refresh token ####################################################
+    public function createRefreshToken($user_id) {
+        $expires= time() + 50400; //TODO: into conf.ini $refreshTokenTTL
+        $refresh_token=uniqid();
+        //DELETE old token
+        $stmt = $this->pdo->prepare('DELETE FROM refresh_token WHERE user_id = ?');
+        $stmt->execute(array($user_id));
+        //CREATE new token
+        $stmt = $this->pdo->prepare('INSERT INTO refresh_token (user_id, expires, refresh_token) VALUES (?, ?, ?)');
+        $stmt->execute(array($user_id, $expires, $refresh_token));
+
+        return $refresh_token;
+    }
+
+    ## verify refresh token ####################################################
+    public function verifyRefreshToken($refresh_token) {
+        $jwt = new JWT();
+        $token =$jwt->getToken();
+        $jwtarray=explode('.', $token);
+        $user_id=$payload = json_decode(base64_decode(strtr($jwtarray[1], '-_', '+/')), true)['sub'];
+        $rolenames = array();
+        $stmt = $this->pdo->prepare('SELECT refresh_token.expires, user.id, user.name, role.name as "role_name" FROM user JOIN refresh_token ON refresh_token.user_id=user.id AND refresh_token.refresh_token=:refresh_token JOIN user_role ON user_role.user_id = user.id JOIN role ON role.id = user_role.role_id WHERE user.id=:user_id;');
+        $stmt->execute(array('user_id' => $user_id, 'refresh_token' => $refresh_token));
+        $data = $stmt->fetchAll();
+        if (!empty($data)){
+            $name= $data['name'];
+            $name='';
+            $expires='';
+            foreach ($data as $entry){
+                $expires=$entry['expires'];
+                $name= $entry['name'];
+                $rolenames[]=$entry['role_name'];
+            }
+            if ($expires > time()){
+                $tmp=array($user_id, $name, $rolenames);
+                return $tmp;
+            }
+        }
+        return false;
+    }
     ## createToken #############################################################
-    public function createToken($id, $name, $rolenames) {
+    public function createToken($user_id, $name, $rolenames) {
         //TODO omit '=' in urldecode/encode
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']); // Create token header as a JSON string
         $payloaddata = array(
             'iss' => "https://" . $_SERVER['SERVER_NAME'],
             'aud' => "https://mystixgame.tk",
-            'sub' => $id,
+            'sub' => $user_id,
             'iat' => time(),
-            'exp' => time() + 1800,
+            'exp' => time() + 300, //TODO into conf.ini $tokenTTL
             'username' => $name,
             'roles' => $rolenames
         );
@@ -25,9 +71,7 @@ class JWT {
         $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $signaturekey, true); // Create Signature Hash
         $base64UrlSignature = str_replace(['+', '/'], ['-', '_'], base64_encode($signature)); // Encode Signature to Base64Url String
         $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature; // Create JWT
-        header('Authorization: Bearer '.$jwt); //Put jwt into response header
-        header('Access-Control-Expose-Headers: Authorization');
-        return true;
+        return $jwt;
     }
 
     ## verifyToken #############################################################

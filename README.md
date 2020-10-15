@@ -31,7 +31,9 @@ Response payload:
     "service":"user",
     "action":"login",
     "payload":{
-        "message":"loggedin successful"
+        "token_type":"bearer",
+        "access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLm15c3RpeGdhbWUudGsiLCJhdWQiOiJodHRwczpcL1wvbXlzdGl4Z2FtZS50ayIsInN1YiI6MSwiaWF0IjoxNjAyNzg2MDg0LCJleHAiOjE2MDI3ODYxMTQsInVzZXJuYW1lIjoiQWRtaW4iLCJyb2xlcyI6WyJhZG1pbiJdfQ==.YngeIsPEaUE0cvdfcNWEcFSaUzzEU0KwuPvrfTnGAeU=",
+        "refresh_token":"5f889324d309f"
     }
 }
 ```
@@ -63,104 +65,26 @@ Response payload:
 }
 ```
 
-### character get
+### token refresh
 
 Request payload:
 ```json
 {
-    "service":"character",
-    "action":"get",
-    "payload":{
-        "character_id":"1"
-    }
+    "service":"token",
+    "action":"refresh",
+    "payload":"5f88b18039ff8"
 }
 ```
 
 Response payload:
 ```json
 {
-    "service": "character",
-    "action": "get",
-    "payload": {
-        "character_id": 1,
-        "character_name": "charname1"
-    }
-}
-```
-
-### character list
-
-Request payload:
-```json
-{
-    "service":"character",
-    "action":"list"
-}
-```
-
-Response payload:
-```json
-{
-    "service": "character",
-    "action": "list",
-    "payload": [
-        {
-            "character_id": 1,
-            "character_name": "charname1"
-        },
-        {
-            "character_id": 2,
-            "character_name": "charname2"
-        }
-    ]
-}
-```
-
-### character edit
-
-Request payload:
-```json
-{
-    "service":"character",
-    "action":"edit",
+    "service":"token",
+    "action":"refresh",
     "payload":{
-        "character_id":"1",
-        "character_name":"charname"
-    }
-}
-```
-
-Response payload:
-```json
-{
-    "service": "character",
-    "action": "edit",
-    "payload": {
-        "message": "API DONE TODO.."
-    }
-}
-```
-
-### character delete
-
-Request payload:
-```json
-{
-    "service":"character",
-    "action":"delete",
-    "payload":{
-        "character_id":"24"
-    }
-}
-```
-
-Response payload:
-```json
-{
-    "service":"character",
-    "action":"delete",
-    "payload":{
-        "message":"done TODO: errorhandling"
+        "token_type":"bearer",
+        "access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLm15c3RpeGdhbWUudGsiLCJhdWQiOiJodHRwczpcL1wvbXlzdGl4Z2FtZS50ayIsInN1YiI6MSwiaWF0IjoxNjAyNzkzOTg1LCJleHAiOjE2MDI3OTQwMTUsInVzZXJuYW1lIjoiQWRtaW4iLCJyb2xlcyI6WyJhZG1pbiJdfQ==.f_RS7KgBigFa7pMyJZvTIQsst-603obGCq9LElyGJhc=",
+        "refresh_token":"5f88b2018b329"
     }
 }
 ```

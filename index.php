@@ -25,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         http_response_code(406);
     } else {
         #TODO validation
-        //TODO if service or action empty or not existing-->http error
         $service = $data->service;
         $action = $data->action;
         $payload = $data->payload;
@@ -33,8 +32,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $response = [];
             $response['service'] = $service;
             $response['action'] = $action;
-            $response['payload'] = checkPermissionAndExecute($service, $action, $payload);
-            echo json_encode($response);
+
+            if ($service=='token' && $action == 'refresh'){
+                $jwt = new JWT();
+                $tmp = $jwt->verifyRefreshToken($payload);
+                if ($tmp !== false){
+                    $user_id=$tmp[0];
+                    $name=$tmp[1];
+                    $role_names=$tmp[2];
+                    $access_token = $jwt->createToken($user_id, $name , $role_names);
+                    $refresh_token = $jwt->createRefreshToken($user_id);
+                    $entry = array();
+                    $entry["token_type"] = "bearer";
+                    $entry["access_token"] = $access_token;
+                    $entry["refresh_token"] = $refresh_token;
+                    $response['payload'] = $entry;
+                    echo json_encode($response);
+                }
+            }
+            else{
+                $test = checkPermissionAndExecute($service, $action, $payload);
+                if (array_key_exists('error', $test)) {
+                    http_response_code($test['error']);
+                }
+                else{
+                    $response['payload'] = $test;
+                }
+                echo json_encode($response);
+            }
         }
         else{
             http_response_code(406);
@@ -43,12 +68,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 function checkPermissionAndExecute($service, $action, $payload){
+
+    if (!file_exists("services/" . $service . ".php")) {
+        return array(error => '404');
+    }
+    require("services/" . $service . ".php");
     $permission_name=$service . '_' . $action;
     $instance = new JWT();
     $token = $instance->getToken();
     $decoded_payload = $instance->verifyToken($token);
-    require("services/" . $service . ".php");
     $svc = new $service();
+    if (!method_exists($svc, $action)){
+        return array(error => '404');
+    }
     $pdo = new DB();
     $pdo = $pdo->connect();
 
@@ -62,6 +94,7 @@ function checkPermissionAndExecute($service, $action, $payload){
             while ($row = $stmt->fetch()){
                 return $svc->$action($payload, $user_id);
             }
+            return array(error => '401');
         }
         catch(PDOException $e)
         {
@@ -77,6 +110,7 @@ function checkPermissionAndExecute($service, $action, $payload){
             {
                 return $svc->$action($payload);
             }
+            return array(error => '401');
         }
         catch(PDOException $e)
         {
