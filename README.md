@@ -2,7 +2,7 @@
 API written in PHP 7.3 that supports services and actions with permissions.
 Accepts only POST requests and uses jwt for authentication.
 A service is just a php class with functions in it. This functions are the actions with permissions via roles.
-With the [client project](https://github.com/MystixGame/client) its possible to create new services and client pages that use them.
+With the [client project](https://github.com/MystixCode/post_only_client) its possible to create new services and client pages that use them.
 
 ## Installation
 - copy it to a [https webserver](https://github.com/MystixCode/webserver_install) ex: https://api.testest.xyz
